@@ -24,6 +24,7 @@ function CurriculumFullDetailsInline({ curriculum }) {
             <p><strong>Nome Completo:</strong> {curriculum.nomeCompleto}</p>
             <p><strong>Data de Nascimento:</strong> {formatDate(curriculum.dataNascimento)}</p>
             <p><strong>Telefone:</strong> {curriculum.telefone}</p>
+            <p><strong>E-mail:</strong> {curriculum.alunoEmail}</p>
             {curriculum.linkedin && <p><strong>LinkedIn:</strong> <a href={curriculum.linkedin} target="_blank" rel="noopener noreferrer">{curriculum.linkedin}</a></p>}
             {curriculum.github && <p><strong>Portfólio/GitHub:</strong> <a href={curriculum.github} target="_blank" rel="noopener noreferrer">{curriculum.github}</a></p>}
 
@@ -31,6 +32,7 @@ function CurriculumFullDetailsInline({ curriculum }) {
                 <h3>Dados Acadêmicos</h3>
                 <p><strong>Curso:</strong> {curriculum.curso}</p>
                 <p><strong>Período/Semestre Atual:</strong> {curriculum.periodoAtual}</p>
+                <p><strong>Status:</strong> {curriculum.status}</p>
                 <p><strong>Previsão de Conclusão:</strong> {curriculum.previsaoConclusao}</p>
             </section>
 

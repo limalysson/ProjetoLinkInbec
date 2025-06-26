@@ -334,6 +334,20 @@ app.post('/api/alunos/upload-foto', auth, upload.single('fotoPerfil'), async (re
     }
 });
 
+// Rota para buscar o currículo do aluno logado
+app.get('/api/alunos/meu-curriculo', auth, async (req, res) => {
+    try {
+        const alunoEmail = req.user.email;
+        const curriculum = await Curriculum.findOne({ alunoEmail });
+        if (!curriculum) {
+            return res.status(404).json({ message: 'Currículo não encontrado.' });
+        }
+        res.status(200).json(curriculum);
+    } catch (error) {
+        console.error('Erro ao buscar currículo do aluno:', error);
+        res.status(500).json({ message: 'Erro ao buscar currículo.' });
+    }
+});
 
 // --- Iniciando o Servidor ---
 app.listen(PORT, () => {

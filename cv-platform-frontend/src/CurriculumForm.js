@@ -38,21 +38,45 @@ function CurriculumForm() {
             }
 
             try {
-                // Rota GET para o currículo do aluno (AINDA NÃO CRIADA NO BACKEND)
-                // Vamos criar uma rota no backend para o aluno puxar seu próprio currículo
-                // Por enquanto, esta funcionalidade está comentada ou simulada
-                // const response = await axios.get('http://localhost:3001/api/alunos/meu-curriculo', {
-                //     headers: { Authorization: `Bearer ${token}` }
-                // });
-                // setFormData(response.data);
-                // setCurrentPhotoUrl(response.data.fotoUrl);
-                // setMessage('Currículo carregado com sucesso!');
+                const response = await axios.get('http://localhost:3001/api/alunos/meu-curriculo', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                if (response.data) {
+                    console.log("Dados recebidos do backend:", response.data); // <-- Adicione esta linha
+                    setFormData({
+                        nomeCompleto: response.data.nomeCompleto || '',
+                        dataNascimento: response.data.dataNascimento
+                            ? response.data.dataNascimento.slice(0, 10)
+                            : '',
+                        telefone: response.data.telefone || '',
+                        linkedin: response.data.linkedin || '',
+                        github: response.data.github || '',
+                        curso: response.data.curso || '',
+                        periodoAtual: response.data.periodoAtual || '',
+                        previsaoConclusao: response.data.previsaoConclusao || '',
+                        experiencias: response.data.experiencias?.length
+                            ? response.data.experiencias
+                            : [{ empresa: '', cargo: '', inicio: '', fim: '', descricao: '' }],
+                        habilidadesTecnicas: response.data.habilidadesTecnicas || '',
+                        habilidadesComportamentais: response.data.habilidadesComportamentais || '',
+                        idiomas: response.data.idiomas?.length
+                            ? response.data.idiomas
+                            : [{ idioma: '', nivel: '' }],
+                        projetos: response.data.projetos?.length
+                            ? response.data.projetos
+                            : [{ nome: '', descricao: '', link: '' }],
+                        resumoProfissional: response.data.resumoProfissional || '',
+                    });
+                    setCurrentPhotoUrl(response.data.fotoUrl || '');
+                    setMessage('Currículo carregado com sucesso!');
+                }
             } catch (err) {
                 // Se o currículo não for encontrado, significa que é o primeiro cadastro
-                // console.log("Nenhum currículo existente. Começando um novo.");
+                // Não faz nada, deixa o formulário vazio
             }
         };
         fetchCurriculum();
+        // eslint-disable-next-line
     }, []);
 
 
