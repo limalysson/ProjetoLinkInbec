@@ -204,6 +204,49 @@ function CurriculumForm() {
         }
     };
 
+    const handleSectionSave = async (sectionFields) => {
+        setMessage('');
+        setError('');
+        setIsLoading(true);
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+            setError('Você precisa estar logado para salvar seu currículo.');
+            setIsLoading(false);
+            return;
+        }
+
+        try {
+            const sectionData = {};
+            sectionFields.forEach(field => {
+                sectionData[field] = formData[field];
+            });
+
+            await axios.patch('http://localhost:3001/api/alunos/curriculo', sectionData, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setMessage('Seção salva com sucesso!');
+        } catch (err) {
+            setError(err.response?.data?.message || 'Erro ao salvar a seção.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    function formatPhoneInput(value) {
+      // Remove tudo que não for número
+      value = value.replace(/\D/g, '');
+      if (value.length > 11) value = value.slice(0, 11);
+      if (value.length > 6) {
+        return `(${value.slice(0,2)}) ${value.slice(2,7)}-${value.slice(7,11)}`;
+      } else if (value.length > 2) {
+        return `(${value.slice(0,2)}) ${value.slice(2)}`;
+      } else if (value.length > 0) {
+        return `(${value}`;
+      }
+      return '';
+    }
+
     return (
         <div className="curriculum-form-container">
             <h2>Meu Currículo</h2>
@@ -253,7 +296,16 @@ function CurriculumForm() {
                 </div>
                 <div className="form-group">
                     <label htmlFor="telefone">Telefone (WhatsApp):</label>
-                    <input type="tel" id="telefone" name="telefone" value={formData.telefone} onChange={handleChange} placeholder="(XX) XXXXX-XXXX" />
+                    <input
+                        type="tel"
+                        id="telefone"
+                        name="telefone"
+                        value={formatPhoneInput(formData.telefone)}
+                        onChange={handleChange}
+                        placeholder="Digite somente os numeros do seu telefone"
+                        inputMode="numeric"
+                        pattern="\d*"
+                        />
                 </div>
                 <div className="form-group">
                     <label htmlFor="linkedin">Link LinkedIn (opcional):</label>
@@ -263,21 +315,75 @@ function CurriculumForm() {
                     <label htmlFor="github">Link Portfólio/GitHub (opcional):</label>
                     <input type="url" id="github" name="github" value={formData.github} onChange={handleChange} placeholder="https://github.com/seu-usuario" />
                 </div>
+                <div className="section-save-btn-row">
+                    <button
+                    type="button"
+                    className="action-button glass-action-button"
+                    disabled={isLoading}
+                    onClick={() => handleSectionSave([
+                        'nomeCompleto', 'dataNascimento', 'telefone', 'linkedin', 'github'
+                    ])}
+                    >
+                    {isLoading ? 'Salvando...' : 'Salvar Dados Pessoais'}
+                    </button>
+                </div>
+                
 
                 {/* --- Dados Acadêmicos --- */}
                 <h3>Dados Acadêmicos</h3>
                 <div className="form-group">
-                    <label htmlFor="curso">Curso:</label>
-                    <input type="text" id="curso" name="curso" value={formData.curso} onChange={handleChange} required />
+                    <div className="form-group">
+                        <label htmlFor="curso">Curso:</label>
+                        <select
+                            id="curso"
+                            name="curso"
+                            value={formData.curso}
+                            onChange={handleChange}
+                            required
+                        >
+                            <option value="" disabled hidden>Selecione o curso</option>
+                            <option value="Análise e Desenvolvimento de Sistemas">Análise e Desenvolvimento de Sistemas</option>
+                            <option value="Engenharia de Software">Engenharia de Software</option>
+                            <option value="Engenharia Civil">Engenharia Civil</option>                            
+                        </select>
+                    </div>
                 </div>
                 <div className="form-group">
-                    <label htmlFor="periodoAtual">Período/Semestre Atual:</label>
-                    <input type="text" id="periodoAtual" name="periodoAtual" value={formData.periodoAtual} onChange={handleChange} placeholder="Ex: 5º Período" required />
-                </div>
+                    <label>Período Atual:</label>
+                    <select
+                      name="periodoAtual"
+                      value={formData.periodoAtual}
+                      onChange={handleChange}
+                      required
+                    >
+                      <option value="" disabled hidden>Selecione o período</option>
+                      <option value="1º Semestre">1º Semestre</option>
+                      <option value="2º Semestre">2º Semestre</option>
+                      <option value="3º Semestre">3º Semestre</option>
+                      <option value="4º Semestre">4º Semestre</option>
+                      <option value="5º Semestre">5º Semestre</option>
+                      <option value="6º Semestre">6º Semestre</option>
+                      <option value="7º Semestre">7º Semestre</option>
+                      <option value="8º Semestre">8º Semestre</option>
+                      <option value="9º Semestre">9º Semestre</option>
+                      <option value="10º Semestre">10º Semestre</option>
+                    </select></div>
                 <div className="form-group">
                     <label htmlFor="previsaoConclusao">Previsão de Conclusão (Mês/Ano):</label>
                     <input type="month" id="previsaoConclusao" name="previsaoConclusao" value={formData.previsaoConclusao} onChange={handleChange} required />
                 </div>
+                <div className="section-save-btn-row">
+                    <button
+                        type="button"
+                        className="action-button glass-action-button"
+                        disabled={isLoading}
+                        onClick={() => handleSectionSave([
+                            'curso', 'periodoAtual', 'previsaoConclusao'
+                        ])}
+                    >
+                        {isLoading ? 'Salvando...' : 'Salvar Dados Acadêmicos'}
+                    </button>
+                </div>                
 
                 {/* --- Experiências Profissionais --- */}
                 <h3>Experiências Profissionais</h3>
@@ -308,7 +414,24 @@ function CurriculumForm() {
                         )}
                     </div>
                 ))}
-                <button type="button" onClick={() => addArrayItem('experiencias')}>Adicionar Experiência</button>
+
+                <div className="section-save-btn-row">
+                    <button 
+                    type="button" 
+                    className="action-button glass-action-button section-btn-left" 
+                    onClick={() => addArrayItem('Experiências')}>
+                        Adicionar Experiências
+                </button>
+                <button
+                    type="button"
+                    className="action-button glass-action-button"
+                    disabled={isLoading}
+                    onClick={() => handleSectionSave(['Experiências'])}
+                >
+                    
+                    {isLoading ? 'Salvando...' : 'Salvar Experiências'}
+                </button>                
+                </div>             
 
                 {/* --- Habilidades --- */}
                 <h3>Habilidades</h3>
@@ -320,6 +443,19 @@ function CurriculumForm() {
                     <label htmlFor="habilidadesComportamentais">Habilidades Comportamentais (separadas por vírgula):</label>
                     <input type="text" id="habilidadesComportamentais" name="habilidadesComportamentais" value={formData.habilidadesComportamentais} onChange={handleChange} placeholder="Ex: Comunicação, Trabalho em Equipe, Proatividade" />
                 </div>
+                
+                <div className="section-save-btn-row">
+                    <button
+                    type="button"
+                    className="action-button glass-action-button"
+                    disabled={isLoading}
+                    onClick={() => handleSectionSave(['habilidadesTecnicas', 'habilidadesComportamentais'])}
+                >
+                    {isLoading ? 'Salvando...' : 'Salvar Habilidades'}
+                </button>
+                </div>
+
+                
 
                 {/* --- Idiomas --- */}
                 <h3>Idiomas</h3>
@@ -338,7 +474,25 @@ function CurriculumForm() {
                         )}
                     </div>
                 ))}
-                <button type="button" onClick={() => addArrayItem('idiomas')}>Adicionar Idioma</button>
+
+                <div className="section-save-btn-row">
+                    <button 
+                    type="button" 
+                    className="action-button glass-action-button section-btn-left" 
+                    onClick={() => addArrayItem('Idioma')}>
+                        Adicionar Idioma
+                </button>
+                <button
+                    type="button"
+                    className="action-button glass-action-button"
+                    disabled={isLoading}
+                    onClick={() => handleSectionSave(['Idioma'])}
+                >
+                    
+                    {isLoading ? 'Salvando...' : 'Salvar Idioma'}
+                </button>
+                
+                </div>                
 
                 {/* --- Projetos --- */}
                 <h3>Projetos</h3>
@@ -357,11 +511,30 @@ function CurriculumForm() {
                             <input type="url" id={`projeto-link-${index}`} name="link" value={projeto.link} onChange={(e) => handleArrayChange(e, index, 'projetos')} placeholder="https://meuprojeto.com" />
                         </div>
                         {formData.projetos.length > 1 && (
-                            <button type="button" onClick={() => removeArrayItem(index, 'projetos')} className="remove-button">Remover Projeto</button>
+                            <button type="button" className="action-button glass-action-button remove-button" onClick={() => removeArrayItem(index, 'projetos')} >Remover Projeto</button>
                         )}
                     </div>
                 ))}
-                <button type="button" onClick={() => addArrayItem('projetos')}>Adicionar Projeto</button>
+
+                <div className="section-save-btn-row">
+                    <button 
+                    type="button" 
+                    className="action-button glass-action-button section-btn-left" 
+                    onClick={() => addArrayItem('projetos')}>
+                        Adicionar Projeto
+                </button>
+                <button
+                    type="button"
+                    className="action-button glass-action-button"
+                    disabled={isLoading}
+                    onClick={() => handleSectionSave(['projetos'])}
+                >
+                    
+                    {isLoading ? 'Salvando...' : 'Salvar Projetos'}
+                </button>
+                
+                </div>
+                
 
 
                 {/* --- Resumo Profissional --- */}
@@ -369,15 +542,27 @@ function CurriculumForm() {
                 <div className="form-group">
                     <label htmlFor="resumoProfissional">Breve Resumo (aparecerá no card para empresas):</label>
                     <textarea id="resumoProfissional" name="resumoProfissional" value={formData.resumoProfissional} onChange={handleChange} rows="4" maxLength="300" placeholder="Apresente-se em poucas linhas, destacando suas principais qualidades e objetivos profissionais."></textarea>
+                <div className="section-save-btn-row">
+                    <button
+                    type="button"
+                    className="action-button glass-action-button"
+                    disabled={isLoading}
+                    onClick={() => handleSectionSave(['resumoProfissional'])}
+                >
+                    {isLoading ? 'Salvando...' : 'Salvar Resumo'}
+                </button>
+                </div>               
+                
                 </div>
+                
 
 
                 <button type="submit" disabled={isLoading}>
                     {isLoading ? 'Salvando...' : 'Salvar Meu Currículo'}
                 </button>
 
-                {message && <p className="success-message">{message}</p>}
-                {error && <p className="error-message">{error}</p>}
+                {message && <p className="success-message" aria-live="polite">{message}</p>}
+                {error && <p className="error-message" aria-live="assertive">{error}</p>}
             </form>
         </div>
     );

@@ -113,7 +113,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1>LinkInbec</h1>
-        <p className="header-welcome-message">Bem-vindo à Plataforma de Currículos INBEC.</p>        
+        <p className="header-welcome-message">Bem-vindo à Plataforma de Currículos dos alunos da INBEC.</p>        
       </header>
       <main>
         <Routes>
@@ -155,7 +155,7 @@ function App() {
               setAuthenticatedEmail={setAuthenticatedEmail}
             />
           } />
-          <Route path="/aluno/cadastro" element={
+          <Route path="/aluno/curriculo" element={
             <ProtectedStudentRoute 
               isAuthenticated={isAuthenticated} 
               setAuthenticated={setIsAuthenticated}

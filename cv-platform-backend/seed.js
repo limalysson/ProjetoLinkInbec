@@ -9,89 +9,73 @@ async function seed() {
         await mongoose.connect(mongoURI);
         console.log('Conectado ao MongoDB!');
 
-        // Exemplo de currículos
-        const curriculos = [
-            {
-                alunoEmail: 'joao@inbec.edu.br',
-                nomeCompleto: 'João Silva',
-                dataNascimento: new Date('2000-05-10'),
-                telefone: '(11) 99999-1111',
-                linkedin: 'https://linkedin.com/in/joaosilva',
-                github: 'https://github.com/joaosilva',
-                curso: 'Engenharia Civil',
-                periodoAtual: '5º Período',
-                previsaoConclusao: '2025-12',
-                experiencias: [
-                    {
-                        empresa: 'Construtora X',
-                        cargo: 'Estagiário',
-                        inicio: '2023-01',
-                        fim: '2023-12',
-                        descricao: 'Atuação em projetos residenciais.'
-                    }
-                ],
-                habilidadesTecnicas: 'AutoCAD, Excel, Projetos',
-                idiomas: [
-                    { idioma: 'Inglês', nivel: 'Intermediário' }
-                ],
-                habilidadesComportamentais: 'Trabalho em equipe, Proatividade',
-                projetos: [
-                    {
-                        nome: 'Projeto Estrutural',
-                        descricao: 'Desenvolvimento de projeto estrutural para residência.',
-                        link: ''
-                    }
-                ],
-                resumoProfissional: 'Estudante dedicado de Engenharia Civil.',
-                status: 'ativo'
-            },
-            {
-                alunoEmail: 'maria@inbec.edu.br',
-                nomeCompleto: 'Maria Souza',
-                dataNascimento: new Date('1999-08-22'),
-                telefone: '(21) 98888-2222',
-                linkedin: 'https://linkedin.com/in/mariasouza',
-                github: 'https://github.com/mariasouza',
-                curso: 'Arquitetura',
-                periodoAtual: '7º Período',
-                previsaoConclusao: '2024-06',
-                experiencias: [
-                    {
-                        empresa: 'ArqDesign',
-                        cargo: 'Estagiária',
-                        inicio: '2022-03',
-                        fim: '',
-                        descricao: 'Participação em projetos de interiores.'
-                    }
-                ],
-                habilidadesTecnicas: 'SketchUp, Revit',
-                idiomas: [
-                    { idioma: 'Espanhol', nivel: 'Básico' }
-                ],
-                habilidadesComportamentais: 'Criatividade, Comunicação',
-                projetos: [],
-                resumoProfissional: 'Apaixonada por design e inovação.',
-                status: 'ativo'
-            },
-            {
-                alunoEmail: 'carlos@inbec.edu.br',
-                nomeCompleto: 'Carlos Pereira',
-                dataNascimento: new Date('2001-02-15'),
-                telefone: '(31) 97777-3333',
-                linkedin: '',
-                github: '',
-                curso: 'Engenharia Elétrica',
-                periodoAtual: '3º Período',
-                previsaoConclusao: '2026-07',
-                experiencias: [],
-                habilidadesTecnicas: 'Matlab, Simulação de circuitos',
-                idiomas: [],
-                habilidadesComportamentais: 'Foco, Organização',
-                projetos: [],
-                resumoProfissional: 'Focado em automação e sistemas elétricos.',
-                status: 'pendente'
-            }
+        const cursos = [
+            'Análise e Desenvolvimento de Sistemas',
+            'Engenharia de Software',
+            'Engenharia Civil'
         ];
+
+        const periodos = [
+            '1º Semestre',
+            '2º Semestre',
+            '3º Semestre',
+            '4º Semestre',
+            '5º Semestre',
+            '6º Semestre',
+            '7º Semestre',
+            '8º Semestre',
+            '9º Semestre',
+            '10º Semestre'
+        ];
+
+        const curriculos = Array.from({ length: 10 }, (_, i) => ({
+            alunoEmail: `aluno${i + 1}@inbec.edu.br`,
+            nomeCompleto: `Aluno Completo ${i + 1}`,
+            dataNascimento: new Date(`200${i + 1}-0${(i % 9) + 1}-15`),
+            telefone: `(1${i + 1}) 9${i + 1}${i + 1}${i + 1}${i + 1}${i + 1}-${i + 1}${i + 1}${i + 1}${i + 1}`,
+            linkedin: `https://linkedin.com/in/aluno${i + 1}`,
+            github: `https://github.com/aluno${i + 1}`,
+            curso: cursos[i % cursos.length],
+            periodoAtual: periodos[i],
+            previsaoConclusao: `202${i + 2}-12`,
+            experiencias: [
+                {
+                    empresa: `Empresa XPTO ${i + 1}`,
+                    cargo: `Cargo ${i + 1}`,
+                    inicio: `202${i}-01`,
+                    fim: `202${i}-12`,
+                    descricao: `Atuou como ${i % 2 === 0 ? 'desenvolvedor' : 'analista'} em projetos relevantes.`
+                },
+                {
+                    empresa: `Empresa ABC ${i + 1}`,
+                    cargo: `Cargo ${i + 1}B`,
+                    inicio: `202${i}-02`,
+                    fim: `202${i}-11`,
+                    descricao: `Responsável por ${i % 2 === 0 ? 'testes' : 'documentação'} e suporte técnico.`
+                }
+            ],
+            habilidadesTecnicas: `Habilidade${i + 1}A, Habilidade${i + 1}B, Habilidade${i + 1}C`,
+            idiomas: [
+                { idioma: 'Inglês', nivel: 'Avançado' },
+                { idioma: 'Espanhol', nivel: 'Básico' },
+                { idioma: 'Francês', nivel: 'Intermediário' }
+            ],
+            habilidadesComportamentais: `Comportamental${i + 1}A, Comportamental${i + 1}B, Comportamental${i + 1}C`,
+            projetos: [
+                {
+                    nome: `Projeto Alpha ${i + 1}`,
+                    descricao: `Desenvolvimento de sistema para gestão de processos.`,
+                    link: `https://projetoalpha${i + 1}.com`
+                },
+                {
+                    nome: `Projeto Beta ${i + 1}`,
+                    descricao: `Implementação de solução web para clientes.`,
+                    link: `https://projetobeta${i + 1}.com`
+                }
+            ],
+            resumoProfissional: `Resumo profissional completo do aluno ${i + 1}.`,
+            status: i % 2 === 0 ? 'ativo' : 'pendente'
+        }));
 
         await Curriculum.deleteMany({});
         await Curriculum.insertMany(curriculos);

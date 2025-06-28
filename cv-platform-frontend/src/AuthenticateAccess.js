@@ -33,7 +33,7 @@ function AuthenticateAccess({ email, setAuthenticated, setAuthenticatedEmail }) 
       setAuthenticated(true);
       setAuthenticatedEmail(null);
       console.log('AuthenticateAccess handleSubmit: Autenticação concluída. Redirecionando...'); // <-- NOVO LOG
-      navigate('/aluno/cadastro');
+      navigate('/aluno/curriculo');
     } catch (err) {
       console.error("AuthenticateAccess handleSubmit: Erro na requisição:", err.response?.data || err); // <-- NOVO LOG
       setError(err.response?.data?.message || 'Erro ao autenticar. Verifique o código.');

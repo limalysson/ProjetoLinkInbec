@@ -62,18 +62,24 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 500;
 }
 
+main {
+  width: 100%;
+  display: block;
+}
+
 /* --- ESTILOS GERAIS DA APLICAÇÃO (App.js) --- */
 .App {
-  text-align: center;
-  padding: 20px;
+  text-align: stretch;
+  padding: 25px;
   width: 100%;
   min-height: 100vh;
-  display: flex;
+  display: block;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   position: relative;
   z-index: 1;
+  max-width: 100vw;
 }
 
 .App-header {
@@ -231,7 +237,6 @@ h1, h2, h3, h4, h5, h6 {
 /* --- ESTILOS COMPARTILHADOS (Login/Autenticação/Formulários) --- */
 /* Todos os containers compartilhados usarão o tema de vidro fosco AZULADO */
 .auth-container,
-.curriculum-form-container,
 .company-landing-container {
   background-color: var(--glass-bg-color-dark);
   padding: 30px;
@@ -246,6 +251,7 @@ h1, h2, h3, h4, h5, h6 {
   position: relative;
   z-index: 1;
   border: 1px solid rgba(255, 255, 255, 0.3);
+  max-width: 450px;
 }
 
 .auth-container {
@@ -253,8 +259,27 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .curriculum-form-container {
-  max-width: 800px;
-  text-align: left;
+  background-color: var(--glass-bg-color-dark);
+  padding: 24px 120px; /* Menos padding lateral */
+  border-radius: 12px;
+  box-shadow: 0 0 20px var(--glass-shadow-color-dark);
+  width: 100%;
+  margin-top: 20px;
+  box-sizing: border-box;
+  color: var(--glass-text-color-dark);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 1;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  max-width: 1200px;   /* Mais largo */
+  min-width: 320px;
+  margin: 0 auto;
+}
+
+.curriculum-form-container form {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .form-group {
@@ -272,7 +297,7 @@ h1, h2, h3, h4, h5, h6 {
 .form-group input,
 .form-group select,
 .form-group textarea {
-  width: calc(100% - 20px);
+  width: 100%;
   padding: 12px;
   border: 1px solid var(--glass-input-border-color);
   border-radius: 8px;
@@ -280,6 +305,30 @@ h1, h2, h3, h4, h5, h6 {
   background-color: var(--glass-input-bg-color);
   color: var(--glass-text-color-dark);
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group select {
+  padding: 8px;
+  border: 1px solid var(--glass-input-border);
+  border-radius: 8px;
+  min-width: 150px;
+  appearance: none;
+  background-color: var(--glass-input-bg-color);
+  color: var(--glass-text-color);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid var(--glass-input-border-color);
+}
+
+.form-group select option {
+  color: #222;              /* Cor do texto das opções */
+  background-color: #fff;   /* Cor de fundo das opções */
+  
+}
+
+.form-group select:focus {
+  outline: none;
+  border-color: var(--inbec-white);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
 }
 
 .form-group input::placeholder,
@@ -375,14 +424,15 @@ button[type="submit"]:disabled {
 
 /* Estilos para o Upload de Foto */
 .foto-upload-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 25px;
-    padding: 20px;
-    border: 2px dashed var(--glass-input-border-color);
-    border-radius: 12px;
-    background-color: var(--glass-input-bg-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+.photo-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .upload-button-label {
@@ -848,12 +898,12 @@ button[type="submit"]:disabled {
   display: flex;
   flex-direction: column;    /* Empilha o botão e os filtros */
   align-items: center;       /* Centraliza horizontalmente */
-  gap: 18px;                 /* Espaço entre botão e filtros */
+  gap: 18px;                /* Espaço entre botão e filtros */
   margin-bottom: 20px;
 }
 
 .copy-link-button {
-  background-color: var(--inbec-medium-gray);
+  background-color: var(--inbec-dark-gray);
   color: var(--inbec-white);
   padding: 10px 20px;
   border-radius: 8px;
@@ -867,8 +917,9 @@ button[type="submit"]:disabled {
 }
 
 .copy-link-button:hover {
-  background-color: var(--inbec-dark-gray);
+  background-color: var(--inbec-light-gray);
   transform: translateY(-3px);
+  color: var(--inbec-blue-dark);
 }
 
 .filter-status-group {
@@ -919,14 +970,62 @@ button[type="submit"]:disabled {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   overflow: visible; /* Adicione esta linha */
+  width: 700px; /* ou outro valor desejado, ex: 80% */
+  max-width: 98vw;
+  margin: 20px auto;
 }
 
 .admin-card-header {
   display: flex;
-  align-items: center; /* Alinha verticalmente */
-  justify-content: space-between; /* Nome à esquerda, status à direita */
-  margin-bottom: 10px;
-  flex-wrap: wrap;     /* Permite quebrar linha em telas pequenas */
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.admin-header-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.admin-resumo-email {
+  font-size: 0.95em;
+  color: var(--glass-text-color);
+  margin-top: 2px;
+}
+
+.admin-status-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  width: 100%;
+}
+
+.admin-email-select-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin: 0;
+}
+
+.admin-email-select-row p {
+  margin: 0 !important;
+}
+
+.admin-resumo-email {
+  align-self: flex-end; /* e-mail à direita */
+  font-size: 0.95em;
+  color: var(--glass-text-color);
+  margin-top: 2px;
+}
+
+.admin-select-company-row {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start; /* botão à esquerda */
 }
 
 .admin-card-header h3 {
@@ -935,6 +1034,12 @@ button[type="submit"]:disabled {
   color: var(--glass-text-color);
   font-weight: 500;
   /* Remova width: 100% se existir */
+}
+
+.status-badge {
+    display: inline-block;
+    min-width: 110px; /* ajuste conforme o tamanho do texto "PENDENTE" */
+    text-align: center;
 }
 
 .status-badge {
@@ -961,7 +1066,12 @@ button[type="submit"]:disabled {
 .admin-resumo {
   font-size: 0.9em;
   color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 15px;
+  margin-bottom: 0;
+}
+
+.admin-resumo-summary {
+  margin: 0;
+  padding: 10px;
 }
 
 .admin-card-actions {
@@ -969,6 +1079,7 @@ button[type="submit"]:disabled {
   flex-wrap: wrap;
   gap: 10px;
   justify-content: flex-end;
+  margin-top: 0;
 }
 
 .action-button {
@@ -1018,13 +1129,210 @@ button[type="submit"]:disabled {
   color: var(--inbec-blue-light); 
 }
 
-.filter-status-group select {
-  color: #222;              /* Cor do texto do select */
-  background-color: #fff;   /* Cor de fundo do select */
-}
-
 /* Para os options (funciona na maioria dos navegadores desktop) */
 .filter-status-group select option {
   color: #222;              /* Cor do texto das opções */
   background-color: #fff;   /* Cor de fundo das opções */
+}
+
+/* Adicione este código ao final do seu App.css */
+
+.admin-card-actions {
+  display: flex;
+  flex-direction: column; /* Organiza os filhos (as linhas) em uma coluna */
+  align-items: flex-start; /* Alinha as linhas à esquerda */
+  gap: 12px; /* Espaço vertical entre as linhas de botões */
+  width: 100%;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.admin-button-row {
+  display: flex;
+  justify-content: space-between; /* distribui igualmente */
+  align-items: center;
+  gap: 10px; /* espaço entre os botões */
+  width: 100%;
+}
+
+.details-row {
+    justify-content: flex-end; /* Alinha o botão "Ver Detalhes" para a direita */
+}
+
+/* Você pode adicionar estilos específicos para os botões de seleção/desseleção */
+.select-button {
+  background-color: #28a745; /* Verde */
+  color: white;
+}
+
+.deselect-button {
+  background-color: #ffc107; /* Amarelo */
+  color: #212529;
+}
+
+.admin-select-row {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Espaço entre indicador e botão */
+}
+.selection-indicator {
+  margin: 0;
+  font-size: 0.95em;
+  color: #28a745; /* ou a cor desejada */
+  font-weight: 500;
+}
+
+.section-save-btn-row {
+    display: flex;
+    justify-content: flex-end; /* Alinha o botão à direita */
+    margin-top: 8px;
+    margin-bottom: 16px;
+}
+
+.section-btn-left {
+    margin-right: auto;
+}
+
+.section-save-btn-row {
+    display: flex;
+    justify-content: flex-end; /* Alinha ambos à direita */
+    gap: 12px;                 /* Espaço entre os botões */
+    margin-top: 8px;
+    margin-bottom: 16px;
+}
+
+.btn-text-mobile { display: none; }
+
+/* Exemplo de responsividade para containers principais */
+@media (max-width: 768px) {
+  .home-login-options-container,
+  .home-buttons-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .home-button-card {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+  .curriculum-form-container,
+  .admin-container {
+    padding: 8px;
+  }
+}
+
+@media (max-width: 600px) {
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  .section-save-btn-row {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+  .action-button,
+  .glass-action-button {
+    width: 100%;
+    min-width: 0;
+  }
+  .curriculum-form-container {
+    padding: 8px 4vw;
+  }
+  h2, h3 {
+    font-size: 1.2em;
+    text-align: center;
+  }
+  .App-header {
+    max-width: 98vw;
+    padding: 12px;
+  }
+  .curriculum-form-container,
+  .admin-container {
+    max-width: 100vw;
+  }
+  .admin-curriculum-card {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 12px 4vw;
+    margin: 0 0 16px 0;
+  }
+  .admin-button-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-start;
+  }
+  .admin-button-row .action-button {
+    width: 48%;
+    min-width: 110px;
+    font-size: 0.95em;
+    padding: 8px 0;
+    margin: 0;
+  }
+  .admin-curriculum-card h3 {
+    font-size: 1.1em;
+    word-break: break-word;
+    text-align: left;
+  }
+  .admin-resumo-summary {
+    font-size: 0.95em;
+    word-break: break-word;
+  }
+  .admin-header-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .admin-select-row {
+    margin-top: 6px;
+  }
+  .section-save-btn-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-start;
+  }
+  .section-save-btn-row .action-button,
+  .section-save-btn-row .glass-action-button {
+    width: 48%;
+    min-width: 90px;
+    font-size: 0.95em;
+    padding: 8px 0;
+    margin: 0;
+  }
+  .filter-status-group {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    width: 100%;
+  }
+  .filter-status-group label {
+    margin-right: 8px;
+    white-space: nowrap;
+  }
+  .filter-status-group select {
+    width: 75%;
+    min-width: 0;
+    margin-left: auto; /* Garante alinhamento à direita */
+  }
+  .filter-status-group > * {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Alinha label à esquerda e select à direita */
+    width: 100%;
+    margin-bottom: 4px;
+  }
+  .btn-text-desktop { display: none; }
+  .btn-text-mobile { display: inline; }
+}
+
+@media (min-width: 1200px) {
+  .curriculum-form-container {
+    padding: 24px 30px;
+  }
 }

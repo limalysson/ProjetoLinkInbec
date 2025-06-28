@@ -181,24 +181,29 @@ app.post('/api/alunos/curriculo', auth, async (req, res) => {
     }
 });
 
-// Rota para Listar Currículos Ativos (Empresa)
+// Rota para Listar Currículos SELECIONADOS (Empresa)
 app.get('/api/curriculos/ativos', async (req, res) => {
-    try {
-        console.log('Backend: Requisição /api/curriculos/ativos recebida!');
-        const activeCurriculums = await Curriculum.find({ status: 'ativo' }).select('-__v -createdAt -updatedAt');
+    try {
+        console.log('Backend: Requisição /api/curriculos/ativos (selecionados) recebida!');
+        
+        // ALTERAÇÃO PRINCIPAL AQUI
+        // Agora, buscamos currículos que o admin marcou como selecionados.
+        const selectedCurriculums = await Curriculum.find({ 
+            selecionadoParaEmpresa: true 
+        }).select('-__v -createdAt -updatedAt');
 
-        if (activeCurriculums.length === 0) {
-            console.log('Backend: Nenhum currículo ativo encontrado.');
-            return res.status(404).json({ message: 'Nenhum currículo ativo encontrado no momento.' });
-        }
+        if (selectedCurriculums.length === 0) { // Variável atualizada
+            console.log('Backend: Nenhum currículo selecionado foi encontrado.');
+            return res.status(404).json({ message: 'Nenhum currículo selecionado foi encontrado no momento.' });
+        }
 
-        console.log(`Backend: ${activeCurriculums.length} currículos ativos encontrados.`);
-        res.status(200).json(activeCurriculums);
+        console.log(`Backend: ${selectedCurriculums.length} currículos selecionados encontrados.`); // Variável atualizada
+        res.status(200).json(selectedCurriculums); // Variável atualizada
 
-    } catch (error) {
-        console.error('Backend: Erro ao buscar currículos ativos:', error);
-        res.status(500).json({ message: 'Erro interno do servidor ao buscar currículos.' });
-    }
+    } catch (error) {
+        console.error('Backend: Erro ao buscar currículos selecionados:', error);
+        res.status(500).json({ message: 'Erro interno do servidor ao buscar currículos.' });
+    }
 });
 
 // Rota para Buscar Currículo Detalhado por ID (Empresa)
@@ -352,4 +357,24 @@ app.get('/api/alunos/meu-curriculo', auth, async (req, res) => {
 // --- Iniciando o Servidor ---
 app.listen(PORT, () => {
     console.log(`Servidor backend rodando na porta ${PORT}`);
+});
+
+app.put('/api/admin/curriculos/:id/select', auth, authorizeAdmin, async (req, res) => {
+    try {
+        const curriculum = await Curriculum.findById(req.params.id);
+
+        if (!curriculum) {
+            return res.status(404).send('Currículo não encontrado.');
+        }
+
+        // Inverte o valor booleano atual
+        curriculum.selecionadoParaEmpresa = !curriculum.selecionadoParaEmpresa;
+
+        await curriculum.save();
+        // Retorna o currículo atualizado para o frontend saber o novo estado
+        res.status(200).json(curriculum); 
+    } catch (error) {
+        console.error('Erro ao selecionar currículo:', error);
+        res.status(500).send('Erro no servidor.');
+    }
 });

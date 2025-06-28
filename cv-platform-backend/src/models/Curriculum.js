@@ -1,8 +1,23 @@
 const mongoose = require('mongoose');
 
-const ExperienceSchema = new mongoose.Schema({ /* ... */ });
-const LanguageSchema = new mongoose.Schema({ /* ... */ });
-const ProjectSchema = new mongoose.Schema({ /* ... */ });
+const ExperienceSchema = new mongoose.Schema({
+    empresa: { type: String, required: true },
+    cargo: { type: String, required: true },
+    inicio: { type: String, required: true },
+    fim: { type: String, required: true },
+    descricao: { type: String, required: true }
+});
+
+const LanguageSchema = new mongoose.Schema({
+    idioma: { type: String, required: true },
+    nivel: { type: String, required: true }
+});
+
+const ProjectSchema = new mongoose.Schema({
+    nome: { type: String, required: true },
+    descricao: { type: String, required: true },
+    link: { type: String, required: true }
+});
 
 const CurriculumSchema = new mongoose.Schema({
     alunoEmail: { type: String, required: true, unique: true, lowercase: true, trim: true },
@@ -29,6 +44,7 @@ const CurriculumSchema = new mongoose.Schema({
     status: { type: String, enum: ['ativo', 'pendente', 'inativo'], default: 'pendente' },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
+    selecionadoParaEmpresa: { type: Boolean, default: false, required: true }
 });
 
 CurriculumSchema.pre('save', function(next) {
