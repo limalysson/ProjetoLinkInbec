@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { API_BASE_URL } from './apiConfig';
 
 function AuthenticateAccess({ email, setAuthenticated, setAuthenticatedEmail }) {
   const [tempPassword, setTempPassword] = useState('');
@@ -26,7 +27,7 @@ function AuthenticateAccess({ email, setAuthenticated, setAuthenticatedEmail }) 
     console.log('AuthenticateAccess handleSubmit: Tentando autenticar com email:', currentEmail, 'e código:', tempPassword); // <-- NOVO LOG
 
     try {
-      const response = await axios.post('http://localhost:3001/api/alunos/autenticar-acesso', { email: currentEmail, tempPassword });
+      const response = await axios.post(`${API_BASE_URL}/api/alunos/autenticar-acesso`, { email: currentEmail, tempPassword });
       console.log('AuthenticateAccess handleSubmit: Requisição POST bem-sucedida!', response.data); // <-- NOVO LOG
       setMessage(response.data.message);
       localStorage.setItem('token', response.data.token);

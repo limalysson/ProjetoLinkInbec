@@ -1,40 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-// Importe useNavigate para redirecionamento programático
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from './apiConfig';
 import './App.css'; 
 
-function AdminLogin({ setAdminAuthenticated }) {
+function AdminLogin({ onAdminLogin }) {
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [message, setMessage] = useState('');
+    const [senha, setSenha] = useState('');
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const navigate = useNavigate(); // Hook para redirecionamento
+    const navigate = useNavigate(); // Hook para navegação
+
+    // NOVO: Redireciona se já estiver autenticado
+    useEffect(() => {
+        const adminToken = localStorage.getItem('adminToken');
+        if (adminToken) {
+            navigate('/admin/dashboard', { replace: true });
+        }
+    }, [navigate]);
 
     const handleSubmit = async (e) => {
         console.log('AdminLogin handleSubmit: Função chamada!'); // <-- NOVO LOG
         e.preventDefault();
-        setMessage('');
         setError('');
-        setIsLoading(true);
+        setLoading(true);
 
         try {
-            const response = await axios.post('http://localhost:3001/api/admin/login', { email, password });
+            // CORREÇÃO: Altere 'password' para 'senha' para corresponder ao estado.
+            const response = await axios.post(`${API_BASE_URL}/api/admin/login`, { email, senha });
             
             console.log('AdminLogin handleSubmit: Login bem-sucedido! Resposta:', response.data); // <-- NOVO LOG
-            setMessage(response.data.message);
             
             localStorage.setItem('adminToken', response.data.token); // Salva o token JWT do admin
-            setAdminAuthenticated(true); // Altera o estado no App.js para indicar que o admin está logado
+            onAdminLogin(); // Chama a função para atualizar o estado no App.js
 
             console.log('AdminLogin handleSubmit: Redirecionando para /admin/dashboard...'); // <-- NOVO LOG
+            // CORREÇÃO: Navega para o dashboard após o sucesso
             navigate('/admin/dashboard'); // Redireciona para o painel
         } catch (err) {
             console.error("AdminLogin handleSubmit: Erro no login do admin:", err.response?.data?.message || err.message || err); // <-- NOVO LOG
-            setError(err.response?.data?.message || 'Erro ao fazer login. Verifique suas credenciais.');
-        } finally {
-            setIsLoading(false);
+            setError(err.response?.data?.message || 'Email ou senha inválidos.');
+            setLoading(false);
         }
     };
 
@@ -58,17 +64,16 @@ function AdminLogin({ setAdminAuthenticated }) {
                     <input
                         type="password"
                         id="adminPassword"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        value={senha}
+                        onChange={(e) => setSenha(e.target.value)}
                         placeholder="admin123"
                         required
                     />
                 </div>
-                <button type="submit" disabled={isLoading}>
-                    {isLoading ? 'Entrando...' : 'Entrar como Administrador'}
+                <button type="submit" disabled={loading}>
+                    {loading ? 'Entrando...' : 'Entrar como Administrador'}
                 </button>
             </form>
-            {message && <p className="success-message">{message}</p>}
             {error && <p className="error-message">{error}</p>}
         </div>
     );

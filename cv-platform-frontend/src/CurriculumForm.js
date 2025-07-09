@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_BASE_URL, getResourceUrl } from './apiConfig'; // <-- Adicionar esta linha
+import { useNavigate } from 'react-router-dom';
 
 function CurriculumForm() {
     const [formData, setFormData] = useState({
@@ -27,6 +29,7 @@ function CurriculumForm() {
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
 
     // Efeito para carregar o currículo existente do aluno (se houver)
     useEffect(() => {
@@ -38,7 +41,7 @@ function CurriculumForm() {
             }
 
             try {
-                const response = await axios.get('http://localhost:3001/api/alunos/meu-curriculo', {
+                const response = await axios.get(`${API_BASE_URL}/api/alunos/meu-curriculo`, { // <-- Alterar esta linha
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 if (response.data) {
@@ -189,12 +192,22 @@ function CurriculumForm() {
             }
 
             // 2. Envia os dados do currículo (agora sem a foto no formData, pois ela já foi tratada)
-            const curriculumResponse = await axios.post('http://localhost:3001/api/alunos/curriculo', formData, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            setMessage(prevMsg => (prevMsg ? prevMsg + ' ' : '') + curriculumResponse.data.message);
+            let response;
+            const existingCurriculumId = formData.id; // Supondo que o ID do currículo existente esteja em formData.id
+            if (existingCurriculumId) {
+                response = await axios.put(`${API_BASE_URL}/api/alunos/curriculo/${existingCurriculumId}`, formData, { // <-- Alterar esta linha
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+            } else {
+                response = await axios.post(`${API_BASE_URL}/api/alunos/curriculo`, formData, { // <-- Alterar esta linha
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+            }
+            setMessage(prevMsg => (prevMsg ? prevMsg + ' ' : '') + response.data.message);
 
         } catch (err) {
             console.error("Erro ao salvar currículo:", err.response || err);
@@ -247,8 +260,26 @@ function CurriculumForm() {
       return '';
     }
 
+    // Função de logout do aluno
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/aluno', { replace: true });
+    };
+
     return (
         <div className="curriculum-form-container">
+            <div className="logout-row">
+                {/* Botão de logout no topo */}
+                <button
+                    className="nav-button logout-button"
+                    style={{ marginBottom: 16, background: '#c0392b' }}
+                    onClick={handleLogout}
+                >
+                    Sair
+                </button>
+            </div>
+
+            
             <h2>Meu Currículo</h2>
             <form onSubmit={handleSubmit}>
                 {/* --- Seção de Upload de Foto --- */}
@@ -271,7 +302,7 @@ function CurriculumForm() {
                     )}
                     {currentPhotoUrl && !previewUrl && (
                         <div className="photo-preview">
-                            <img src={currentPhotoUrl} alt="Foto Atual" />
+                            <img src={getResourceUrl(currentPhotoUrl)} alt="Foto Atual" /> {/* <-- Alterar esta linha */}
                             <p>Foto de perfil atual</p>
                         </div>
                     )}

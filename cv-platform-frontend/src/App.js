@@ -39,39 +39,22 @@ const ProtectedStudentRoute = ({ children, isAuthenticated, setAuthenticated, se
 };
 
 // --- COMPONENTE DE PROTEÇÃO DE ROTA (ADMIN) ---
-const ProtectedAdminRoute = ({ children, isAdminAuthenticated, setIsAdminAuthenticated }) => {
+const ProtectedAdminRoute = ({ children, isAdminAuthenticated }) => {
     const navigate = useNavigate();
-    const location = useLocation();
-
     useEffect(() => {
-        console.log('ProtectedAdminRoute useEffect - checking admin token...');
-        const adminToken = localStorage.getItem('adminToken');
-        if (!adminToken) {
-            console.log('ProtectedAdminRoute: No admin token found. Redirecting to /admin.');
-            setIsAdminAuthenticated(false);
-            navigate('/admin', { replace: true, state: { from: location.pathname } });
-        } else {
-            console.log('ProtectedAdminRoute: Admin token found. Admin is authenticated.');
-            setIsAdminAuthenticated(true);
+        if (!isAdminAuthenticated) {
+            navigate('/admin');
         }
-    }, [isAdminAuthenticated, navigate, setIsAdminAuthenticated, location.pathname]);
+    }, [isAdminAuthenticated, navigate]);
 
-    console.log('ProtectedAdminRoute render: isAdminAuthenticated:', isAdminAuthenticated); 
-
-    if (isAdminAuthenticated) {
-        return children;
-    }
-    return null; 
+    return isAdminAuthenticated ? children : null; // ou um componente de loading
 };
-
 
 // --- Componente Principal da Aplicação (App) ---
 function App() {
   const [authenticatedEmail, setAuthenticatedEmail] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
-
-  const location = useLocation();
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(!!localStorage.getItem('adminToken'));
 
   useEffect(() => {
     console.log('App.js initial useEffect: Checking local storage for tokens.');
@@ -96,90 +79,93 @@ function App() {
     }
   }, []);
 
-  const handleStudentLogout = () => {
-    console.log('Aluno fazendo logout.');
-    localStorage.removeItem('token');
-    setIsAuthenticated(false);
-    setAuthenticatedEmail(null); 
+  // Função para ser chamada pelo AdminLogin
+  const handleAdminLogin = () => {
+      setIsAdminAuthenticated(true);
   };
 
+  // Função de logout do admin
   const handleAdminLogout = () => {
-    console.log('Admin fazendo logout.');
-    localStorage.removeItem('adminToken');
-    setIsAdminAuthenticated(false);
+      localStorage.removeItem('adminToken');
+      setIsAdminAuthenticated(false);
+      // Opcional: redirecionar para a página de login do admin
+      // navigate('/admin/login');
   };
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>LinkInbec</h1>
-        <p className="header-welcome-message">Bem-vindo à Plataforma de Currículos dos alunos da INBEC.</p>        
-      </header>
-      <main>
-        <Routes>
-          <Route path="/" element={
-            <div className="home-login-options-container">
-              <p className="home-instruction-text">Selecione uma área para começar:</p>
-              <div className="home-buttons-group">
-                <div className="home-button-card">
-                  <h2 className="home-button-title">Área do aluno</h2>
-                  <p className="home-button-description">
-                    Cadastre seus dados,<br/>
-                    crie seu currículo e<br/>
-                    mantenha suas informações<br/>
-                    sempre atualizadas.
-                  </p>
-                  <div className="home-button-separator"></div>
-                  <Link to="/aluno" className="nav-button home-button-link">Acessar</Link>
-                </div>
+      <div className="App">
+        <header className="App-header">
+          <h1>LinkInbec</h1>
+          <p className="header-welcome-message">Bem-vindo à Plataforma de Currículos dos alunos da INBEC.</p>        
+        </header>
+        <main>
+          <Routes>
+            <Route path="/" element={
+              <div className="home-login-options-container">
+                <p className="home-instruction-text">Selecione uma área para começar:</p>
+                <div className="home-buttons-group">
+                  <div className="home-button-card">
+                    <h2 className="home-button-title">Área do aluno</h2>
+                    <p className="home-button-description">
+                      Cadastre seus dados,<br/>
+                      crie seu currículo e<br/>
+                      mantenha suas informações<br/>
+                      sempre atualizadas.
+                    </p>
+                    <div className="home-button-separator"></div>
+                    <Link to="/aluno" className="nav-button home-button-link">Acessar</Link>
+                  </div>
 
-                <div className="home-button-card">
-                  <h2 className="home-button-title">Área do administrador</h2>
-                  <p className="home-button-description">
-                    Visualize os currículos cadastrados,<br/>
-                    analise os dados e gerencie a&nbsp;<br/>
-                    visibilidade para as empresas.
-                  </p>
-                  <div className="home-button-separator"></div>
-                  <Link to="/admin" className="nav-button home-button-link">Acessar</Link>
+                  <div className="home-button-card">
+                    <h2 className="home-button-title">Área do administrador</h2>
+                    <p className="home-button-description">
+                      Visualize os currículos cadastrados,<br/>
+                      analise os dados e gerencie a&nbsp;<br/>
+                      visibilidade para as empresas.
+                    </p>
+                    <div className="home-button-separator"></div>
+                    <Link to="/admin" className="nav-button home-button-link">Acessar</Link>
+                  </div>
                 </div>
               </div>
-            </div>
-          } />
-          
-          <Route path="/aluno" element={<RequestAccess setAuthenticatedEmail={setAuthenticatedEmail} />} />
-          <Route path="/aluno/autenticar" element={
-            <AuthenticateAccess
-              email={authenticatedEmail} 
-              setAuthenticated={setIsAuthenticated}
-              setAuthenticatedEmail={setAuthenticatedEmail}
+            } />
+            
+            <Route path="/aluno" element={<RequestAccess setAuthenticatedEmail={setAuthenticatedEmail} />} />
+            <Route path="/aluno/autenticar" element={
+              <AuthenticateAccess
+                email={authenticatedEmail} 
+                setAuthenticated={setIsAuthenticated}
+                setAuthenticatedEmail={setAuthenticatedEmail}
+              />
+            } />
+            <Route path="/aluno/curriculo" element={
+              <ProtectedStudentRoute 
+                isAuthenticated={isAuthenticated} 
+                setAuthenticated={setIsAuthenticated}
+                setAuthenticatedEmail={setAuthenticatedEmail}
+              >
+                <CurriculumForm />
+              </ProtectedStudentRoute>
+            } />
+
+            <Route path="/empresa" element={<CompanyLandingPage />} />
+
+            {/* Rota de Login do Admin */}
+            <Route path="/admin" element={<AdminLogin onAdminLogin={handleAdminLogin} />} />
+
+            {/* Rota Protegida do Dashboard */}
+            <Route 
+                path="/admin/dashboard"
+                element={
+                    <ProtectedAdminRoute isAdminAuthenticated={isAdminAuthenticated}>
+                        <AdminDashboard onAdminLogout={handleAdminLogout} />
+                    </ProtectedAdminRoute>
+                } 
             />
-          } />
-          <Route path="/aluno/curriculo" element={
-            <ProtectedStudentRoute 
-              isAuthenticated={isAuthenticated} 
-              setAuthenticated={setIsAuthenticated}
-              setAuthenticatedEmail={setAuthenticatedEmail}
-            >
-              <CurriculumForm />
-            </ProtectedStudentRoute>
-          } />
-
-          <Route path="/empresa" element={<CompanyLandingPage />} />
-
-          <Route path="/admin" element={<AdminLogin setAdminAuthenticated={setIsAdminAuthenticated} />} />
-          <Route path="/admin/dashboard" element={
-            <ProtectedAdminRoute
-              isAdminAuthenticated={isAdminAuthenticated}
-              setIsAdminAuthenticated={setIsAdminAuthenticated}
-            >
-              <AdminDashboard />
-            </ProtectedAdminRoute>
-          } />
-          <Route path="*" element={<h2>Página Não Encontrada</h2>} />
-        </Routes>
-      </main>
-    </div>
+            <Route path="*" element={<h2>Página Não Encontrada</h2>} />
+          </Routes>
+        </main>
+      </div>
   );
 }
 

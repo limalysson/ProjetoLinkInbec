@@ -9,6 +9,7 @@ const auth = require('./src/middleware/auth');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs'); // Importa o módulo fs para criar diretórios
+const os = require('os'); // <-- Adicionar esta linha para acessar informações do sistema
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -238,9 +239,9 @@ app.get('/api/curriculos/:id', async (req, res) => {
 // Rota de Login para Administradores
 app.post('/api/admin/login', async (req, res) => {
     console.log('Backend: Requisição de login Admin recebida!');
-    const { email, password } = req.body;
+    const { email, senha } = req.body;
 
-    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+    if (email === ADMIN_EMAIL && senha === ADMIN_PASSWORD) {
         console.log('Backend: Credenciais Admin CORRETAS.');
         const token = jwt.sign({ email: email, role: 'admin' }, JWT_SECRET, { expiresIn: '8h' });
         console.log('Backend: Token JWT de Admin gerado. Enviando resposta.');
@@ -355,8 +356,26 @@ app.get('/api/alunos/meu-curriculo', auth, async (req, res) => {
 });
 
 // --- Iniciando o Servidor ---
-app.listen(PORT, () => {
-    console.log(`Servidor backend rodando na porta ${PORT}`);
+
+// Função para encontrar o IP local na rede
+const getLocalIpAddress = () => {
+    const interfaces = os.networkInterfaces();
+    for (const name of Object.keys(interfaces)) {
+        for (const net of interfaces[name]) {
+            // Pula endereços que não são IPv4 e endereços internos (ex: 127.0.0.1)
+            if (net.family === 'IPv4' && !net.internal) {
+                return net.address;
+            }
+        }
+    }
+    return '0.0.0.0'; // Retorna um padrão caso não encontre
+};
+
+const localIp = getLocalIpAddress();
+
+app.listen(PORT, '0.0.0.0', () => {
+    // Mensagem de log atualizada para mostrar o IP local
+    console.log(`Servidor rodando! Acesse em: http://${localIp}:${PORT}`);
 });
 
 app.put('/api/admin/curriculos/:id/select', auth, authorizeAdmin, async (req, res) => {
