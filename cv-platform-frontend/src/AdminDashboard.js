@@ -126,11 +126,21 @@ function AdminDashboard({ onAdminLogout }) {
             return;
         }
         const ids = selecionados.map(cv => cv._id).join(',');
-        // CORREÇÃO: Usa a origem da janela atual para criar o link dinamicamente
         const link = `${window.location.origin}/empresa?ids=${ids}`;
-        navigator.clipboard.writeText(link)
-            .then(() => setMessage('Link copiado!'))
-            .catch(() => setError('Erro ao copiar o link.'));
+
+        // Verifica se a API de clipboard está disponível
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(link)
+                .then(() => setMessage('Link copiado!'))
+                .catch(() => setError('Erro ao copiar o link.'));
+        } else {
+            setError(
+              <>
+                Copiar para a área de transferência não é suportado neste dispositivo.<br />
+                Copie o link manualmente: <a href={link} target="_blank" rel="noopener noreferrer">{link}</a>
+              </>
+            );
+        }
     };
 
     // Função de logout do admin
