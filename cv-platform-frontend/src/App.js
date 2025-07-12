@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
 import './App.css'; 
+import './App.mobile.css';
 
 // --- Importação dos Componentes de Página ---
 import RequestAccess from './RequestAccess'; 

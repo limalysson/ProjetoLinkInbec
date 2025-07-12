@@ -1,0 +1,156 @@
+@media (max-width: 600px) {
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  .section-save-btn-row {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+  .action-button,
+  .glass-action-button {
+    width: 100%;
+    min-width: 0;
+  }
+  .curriculum-form-container {
+    padding: 8px 4vw;
+  }
+  h2, h3 {
+    font-size: 1.2em;
+    text-align: center;
+  }
+  .App-header {
+    max-width: 98vw;
+    padding: 12px;
+  }
+  .curriculum-form-container,
+  .admin-container {
+    max-width: 100vw;
+  }
+  .admin-curriculum-card {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 12px 4vw;
+    margin: 0 0 16px 0;
+  }
+  .admin-button-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-start;
+  }
+  .admin-button-row .action-button {
+    width: 48%;
+    min-width: 110px;
+    font-size: 0.95em;
+    padding: 8px 0;
+    margin: 0;
+  }
+  .admin-curriculum-card h3 {
+    font-size: 1.1em;
+    word-break: break-word;
+    text-align: left;
+  }
+  .admin-resumo-summary {
+    font-size: 0.95em;
+    word-break: break-word;
+  }
+  .admin-header-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .admin-select-row {
+    margin-top: 6px;
+  }
+  .section-save-btn-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-start;
+  }
+  .section-save-btn-row .action-button,
+  .section-save-btn-row .glass-action-button {
+    width: 48%;
+    min-width: 90px;
+    font-size: 0.95em;
+    padding: 8px 0;
+    margin: 0;
+  }
+  .filter-status-group {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    width: 100%;
+  }
+  .filter-status-group label {
+    margin-right: 8px;
+    white-space: nowrap;
+  }
+  .filter-status-group select {
+    width: 75%;
+    min-width: 0;
+    margin-left: auto; /* Garante alinhamento à direita */
+  }
+  .filter-status-group > * {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Alinha label à esquerda e select à direita */
+    width: 100%;
+    margin-bottom: 4px;
+  }
+  .btn-text-desktop { display: none; }
+  .btn-text-mobile { display: inline; }
+
+  .curriculum-card-new-layout {
+    max-width: 98vw;
+    width: 100%;
+    min-width: unset;
+    margin: 12px 0;
+    padding: 12px 8px;
+    flex-direction: column;
+    align-items: stretch;
+    box-sizing: border-box;
+  }
+
+  .curriculum-card-new-layout .card-summary-section {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .curriculum-card-new-layout .foto-area {
+    margin-bottom: 12px;
+    margin-right: 0;
+  }
+
+  .curriculum-card-new-layout .info-area {
+    padding: 0;
+    text-align: center;
+  }
+
+  .curriculum-card-new-layout .details-button-new-layout {
+    width: 100%;
+    margin-top: 10px;
+    font-size: 1rem;
+  }
+
+  .curriculum-card-new-layout .foto-area {
+    border-right: none;
+    margin-right: 0;
+  }  
+
+  .company-landing-container {
+    width: 98vw;
+    max-width: 98vw;
+    margin: 0 auto;
+    padding: 5px 30px 16px 30px;
+    box-sizing: border-box;
+  }
+  
+}

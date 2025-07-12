@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api, { API_BASE_URL } from './apiConfig';
 import './App.css';
+import './App.mobile.css';
 import CurriculumFullDetailsInline from './CurriculumFullDetailsInline';
 import { useNavigate } from 'react-router-dom';
 

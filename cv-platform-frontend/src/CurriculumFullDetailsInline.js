@@ -1,5 +1,6 @@
 import React from 'react';
 import './App.css'; // Para usar os estilos gerais
+import './App.mobile.css';
 
 function CurriculumFullDetailsInline({ curriculum }) {
     if (!curriculum) {

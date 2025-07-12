@@ -4,6 +4,7 @@ import './App.css'; // Certifique-se de que seu arquivo de estilos está linkado
 import CurriculumDetail from './CurriculumDetail'; // Componente para o modal de detalhes do currículo
 import CurriculumFullDetailsInline from './CurriculumFullDetailsInline'; // NOVO
 import { useLocation, useNavigate } from 'react-router-dom';
+import './App.mobile.css'; // Certifique-se de que o CSS mobile está linkado
 
 function CompanyLandingPage() {
     const location = useLocation();
