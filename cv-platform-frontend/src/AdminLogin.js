@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api, { API_BASE_URL } from './apiConfig';
 import { useNavigate } from 'react-router-dom';
-import { API_BASE_URL } from './apiConfig';
 import './App.css'; 
 
 function AdminLogin({ onAdminLogin }) {
@@ -27,7 +26,7 @@ function AdminLogin({ onAdminLogin }) {
 
         try {
             // CORREÇÃO: Altere 'password' para 'senha' para corresponder ao estado.
-            const response = await axios.post(`${API_BASE_URL}/api/admin/login`, { email, senha });
+            const response = await api.post(`${API_BASE_URL}/api/admin/login`, { email, senha });
             
             console.log('AdminLogin handleSubmit: Login bem-sucedido! Resposta:', response.data); // <-- NOVO LOG
             

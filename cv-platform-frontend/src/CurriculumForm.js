@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { API_BASE_URL, getResourceUrl } from './apiConfig'; // <-- Adicionar esta linha
+import api, { API_BASE_URL } from './apiConfig'; // <-- Adicionar esta linha
 import { useNavigate } from 'react-router-dom';
+
+function getResourceUrl(path) {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    return `http://localhost:3001${path}`;
+}
 
 function CurriculumForm() {
     const [formData, setFormData] = useState({
@@ -41,7 +46,7 @@ function CurriculumForm() {
             }
 
             try {
-                const response = await axios.get(`${API_BASE_URL}/api/alunos/meu-curriculo`, { // <-- Alterar esta linha
+                const response = await api.get(`${API_BASE_URL}/api/alunos/meu-curriculo`, { // <-- Alterar esta linha
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 if (response.data) {
@@ -147,7 +152,7 @@ function CurriculumForm() {
         photoFormData.append('fotoPerfil', selectedFile); // 'fotoPerfil' deve corresponder ao nome no backend (upload.single('fotoPerfil'))
 
         try {
-            const response = await axios.post('http://localhost:3001/api/alunos/upload-foto', photoFormData, {
+            const response = await api.post('http://localhost:3001/api/alunos/upload-foto', photoFormData, {
                 headers: {
                     'Content-Type': 'multipart/form-data', // MUITO IMPORTANTE para uploads
                     Authorization: `Bearer ${token}`
@@ -195,13 +200,13 @@ function CurriculumForm() {
             let response;
             const existingCurriculumId = formData.id; // Supondo que o ID do currículo existente esteja em formData.id
             if (existingCurriculumId) {
-                response = await axios.put(`${API_BASE_URL}/api/alunos/curriculo/${existingCurriculumId}`, formData, { // <-- Alterar esta linha
+                response = await api.put(`${API_BASE_URL}/api/alunos/curriculo/${existingCurriculumId}`, formData, { // <-- Alterar esta linha
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
             } else {
-                response = await axios.post(`${API_BASE_URL}/api/alunos/curriculo`, formData, { // <-- Alterar esta linha
+                response = await api.post(`${API_BASE_URL}/api/alunos/curriculo`, formData, { // <-- Alterar esta linha
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -235,7 +240,7 @@ function CurriculumForm() {
                 sectionData[field] = formData[field];
             });
 
-            await axios.patch('http://localhost:3001/api/alunos/curriculo', sectionData, {
+            await api.patch('http://localhost:3001/api/alunos/curriculo', sectionData, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setMessage('Seção salva com sucesso!');

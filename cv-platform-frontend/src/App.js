@@ -10,6 +10,8 @@ import CurriculumForm from './CurriculumForm';
 import CompanyLandingPage from './CompanyLandingPage';
 import AdminLogin from './AdminLogin';
 import AdminDashboard from './AdminDashboard';
+import Home from './Home';
+
 
 // --- COMPONENTE DE PROTEÇÃO DE ROTA (ALUNO) ---
 const ProtectedStudentRoute = ({ children, isAuthenticated, setAuthenticated, setAuthenticatedEmail }) => {
@@ -96,41 +98,15 @@ function App() {
       <div className="App">
         <header className="App-header">
           <h1>LinkInbec</h1>
-          <p className="header-welcome-message">Bem-vindo à Plataforma de Currículos dos alunos da INBEC.</p>        
+          <p className="header-welcome-message">Bem-vindo à Plataforma de Currículos dos alunos da Faculdade INBEC.</p>        
         </header>
         <main>
           <Routes>
-            <Route path="/" element={
-              <div className="home-login-options-container">
-                <p className="home-instruction-text">Selecione uma área para começar:</p>
-                <div className="home-buttons-group">
-                  <div className="home-button-card">
-                    <h2 className="home-button-title">Área do aluno</h2>
-                    <p className="home-button-description">
-                      Cadastre seus dados,<br/>
-                      crie seu currículo e<br/>
-                      mantenha suas informações<br/>
-                      sempre atualizadas.
-                    </p>
-                    <div className="home-button-separator"></div>
-                    <Link to="/aluno" className="nav-button home-button-link">Acessar</Link>
-                  </div>
-
-                  <div className="home-button-card">
-                    <h2 className="home-button-title">Área do administrador</h2>
-                    <p className="home-button-description">
-                      Visualize os currículos cadastrados,<br/>
-                      analise os dados e gerencie a&nbsp;<br/>
-                      visibilidade para as empresas.
-                    </p>
-                    <div className="home-button-separator"></div>
-                    <Link to="/admin" className="nav-button home-button-link">Acessar</Link>
-                  </div>
-                </div>
-              </div>
-            } />
+            
+            <Route path="/" element={<Home />} />
             
             <Route path="/aluno" element={<RequestAccess setAuthenticatedEmail={setAuthenticatedEmail} />} />
+
             <Route path="/aluno/autenticar" element={
               <AuthenticateAccess
                 email={authenticatedEmail} 
@@ -138,6 +114,7 @@ function App() {
                 setAuthenticatedEmail={setAuthenticatedEmail}
               />
             } />
+
             <Route path="/aluno/curriculo" element={
               <ProtectedStudentRoute 
                 isAuthenticated={isAuthenticated} 

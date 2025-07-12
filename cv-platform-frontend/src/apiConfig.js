@@ -1,16 +1,21 @@
-const getApiBaseUrl = () => {
-  const hostname = window.location.hostname;
-  if (hostname === 'localhost') {
-    return 'http://localhost:3001';
-  }
-  return `http://${hostname}:3001`;
-};
+import axios from 'axios';
 
-export const API_BASE_URL = getApiBaseUrl();
+export const API_BASE_URL = 'http://localhost:3001'; // ajuste conforme seu backend
 
-export const getResourceUrl = (path) => {
-  if (path && path.startsWith('/uploads')) {
-    return `${API_BASE_URL}${path}`;
+const api = axios.create({
+  baseURL: API_BASE_URL,
+});
+
+// Interceptor para tratar token expirado (erro 401)
+api.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('adminToken'); // Remove o token expirado
+      window.location.href = '/admin/login'; // Redireciona para login
+    }
+    return Promise.reject(error);
   }
-  return path;
-};
+);
+
+export default api;
