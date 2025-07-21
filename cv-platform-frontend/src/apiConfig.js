@@ -12,7 +12,7 @@ api.interceptors.response.use(
   error => {
     if (error.response && error.response.status === 401) {
       localStorage.removeItem('adminToken'); // Remove o token expirado
-      window.location.href = '/admin/login'; // Redireciona para login
+      window.location.href = '/admin'; // Redireciona para login do adm
     }
     return Promise.reject(error);
   }

@@ -121,6 +121,25 @@ function CompanyLandingPage() {
                                             <strong>Habilidades:</strong> {curriculum.habilidadesTecnicas || 'N/A'}
                                         </p>
                                     </div>
+                                    {curriculum.pdfUrl ? (
+                                        <a
+                                            href={`http://localhost:3001${curriculum.pdfUrl}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="details-button-new-layout"
+                                            style={{ marginRight: 12, marginTop: 8, display: 'inline-block' }}
+                                        >
+                                            Visualizar PDF
+                                        </a>
+                                    ) : (
+                                        <button
+                                            className="details-button-new-layout"
+                                            style={{ marginRight: 12, marginTop: 8, display: 'inline-block', opacity: 0.6, cursor: 'not-allowed' }}
+                                            disabled
+                                        >
+                                            PDF não enviado
+                                        </button>
+                                    )}
                                     <button
                                         className="details-button-new-layout"
                                         onClick={() => setExpandedCardId(expandedCardId === curriculum._id ? null : curriculum._id)}

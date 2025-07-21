@@ -358,7 +358,30 @@ function AdminDashboard({ onAdminLogout }) {
                                     </div>
                                 </div>
 
-                                <p className="admin-resumo-summary">{curriculum.resumoProfissional || 'Sem resumo.'}</p>
+                                <div className="admin-resumo-pdf-row">
+                                    <p className="admin-resumo-summary">{curriculum.resumoProfissional || 'Sem resumo.'}</p>
+                                    <div className="admin-cv-pdf-link">
+                                        {curriculum.pdfUrl ? (
+                                        <a
+                                            href={`${API_BASE_URL}${curriculum.pdfUrl}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="action-button glass-action-button"
+                                            style={{ marginTop: 8, display: 'inline-block' }}
+                                        >
+                                            Visualizar Currículo PDF
+                                        </a>
+                                        ) : (
+                                        <button
+                                            className="action-button glass-action-button"
+                                            style={{ marginTop: 8, display: 'inline-block', opacity: 0.6, cursor: 'not-allowed' }}
+                                            disabled
+                                        >
+                                            PDF não enviado
+                                        </button>
+                                        )}
+                                    </div>
+                                    </div>
                                 
                                 <div className="admin-card-actions">
                                     {/* ======================================= */}
@@ -410,6 +433,8 @@ function AdminDashboard({ onAdminLogout }) {
                                         <CurriculumFullDetailsInline curriculum={curriculum} />
                                     )}
                                 </div>
+
+                                
                             </div>
                         ))}
                     </div>

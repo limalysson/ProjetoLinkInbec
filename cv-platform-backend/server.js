@@ -27,6 +27,65 @@ const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
 }
+
+// --- Configuração do Multer para Upload de PDFs ---
+const storagePDF = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const pdfsDir = path.join(__dirname, 'uploads', 'pdfs');
+        if (!fs.existsSync(pdfsDir)) {
+            fs.mkdirSync(pdfsDir, { recursive: true });
+        }
+        cb(null, pdfsDir);
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, req.user.email + '-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+const uploadPDF = multer({
+    storage: storagePDF,
+    fileFilter: function (req, file, cb) {
+        if (file.mimetype === 'application/pdf') {
+            cb(null, true);
+        } else {
+            cb(new Error('Apenas arquivos PDF são permitidos!'));
+        }
+    },
+    limits: { fileSize: 5 * 1024 * 1024 }
+});
+
+// --- Rota de upload do PDF do currículo do aluno ---
+app.post('/api/alunos/upload-pdf', auth, uploadPDF.single('pdf'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: 'Nenhum arquivo enviado.' });
+        }
+        const alunoEmail = req.user.email;
+        const pdfPath = `/uploads/pdfs/${req.file.filename}`;
+
+        // Busca o currículo do aluno
+        const curriculo = await Curriculum.findOne({ alunoEmail });
+        if (curriculo && curriculo.pdfUrl) {
+            // Remove o PDF antigo do servidor
+            const fs = require('fs');
+            const path = require('path');
+            const oldFilePath = path.join(__dirname, curriculo.pdfUrl);
+            if (fs.existsSync(oldFilePath)) {
+                fs.unlinkSync(oldFilePath);
+            }
+        }
+
+        // Atualiza o currículo com o novo PDF
+        await Curriculum.findOneAndUpdate(
+            { alunoEmail },
+            { pdfUrl: pdfPath },
+            { new: true, upsert: true, setDefaultsOnInsert: true }
+        );
+        res.json({ success: true, pdfUrl: pdfPath });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
 app.use('/uploads', express.static(uploadsDir));
 
 // --- Variáveis de Ambiente Essenciais ---
@@ -299,6 +358,21 @@ app.put('/api/admin/curriculos/:id/status', auth, authorizeAdmin, async (req, re
     }
 });
 
+app.put('/api/admin/curriculos/:id/select', auth, authorizeAdmin, async (req, res) => {
+    try {
+        const curriculoId = req.params.id;
+        const curriculo = await Curriculum.findById(curriculoId);
+        if (!curriculo) {
+            return res.status(404).json({ success: false, message: 'Currículo não encontrado.' });
+        }
+        curriculo.selecionadoParaEmpresa = !curriculo.selecionadoParaEmpresa;
+        await curriculo.save();
+        res.json({ success: true, selecionadoParaEmpresa: curriculo.selecionadoParaEmpresa });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
 
 // --- NOVA ROTA PARA UPLOAD DE FOTO DE PERFIL ---
 app.post('/api/alunos/upload-foto', auth, upload.single('fotoPerfil'), async (req, res) => {
@@ -341,17 +415,45 @@ app.post('/api/alunos/upload-foto', auth, upload.single('fotoPerfil'), async (re
 });
 
 // Rota para buscar o currículo do aluno logado
-app.get('/api/alunos/meu-curriculo', auth, async (req, res) => {
+app.get('/api/alunos/curriculo', auth, async (req, res) => {
     try {
         const alunoEmail = req.user.email;
-        const curriculum = await Curriculum.findOne({ alunoEmail });
-        if (!curriculum) {
-            return res.status(404).json({ message: 'Currículo não encontrado.' });
+        const curriculo = await Curriculum.findOne({ alunoEmail });
+        if (!curriculo) {
+            return res.json({ success: true, curriculo: null });
         }
-        res.status(200).json(curriculum);
-    } catch (error) {
-        console.error('Erro ao buscar currículo do aluno:', error);
-        res.status(500).json({ message: 'Erro ao buscar currículo.' });
+        res.json({ success: true, curriculo });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// --- NOVA ROTA PARA REMOVER O PDF DO CURRÍCULO ---
+app.delete('/api/alunos/pdf', auth, async (req, res) => {
+    try {
+        const alunoEmail = req.user.email;
+        // Busca o currículo do aluno
+        const curriculo = await Curriculum.findOne({ alunoEmail });
+        if (!curriculo || !curriculo.pdfUrl) {
+            return res.status(404).json({ success: false, message: 'Nenhum PDF cadastrado.' });
+        }
+
+        // Opcional: Remover o arquivo físico do servidor
+        const pdfPath = curriculo.pdfUrl;
+        const fs = require('fs');
+        const path = require('path');
+        const filePath = path.join(__dirname, pdfPath);
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+        }
+
+        // Remove o campo pdfUrl do currículo
+        curriculo.pdfUrl = '';
+        await curriculo.save();
+
+        res.json({ success: true, message: 'PDF removido com sucesso.' });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
     }
 });
 
@@ -374,26 +476,5 @@ const getLocalIpAddress = () => {
 const localIp = getLocalIpAddress();
 
 app.listen(PORT, '0.0.0.0', () => {
-    // Mensagem de log atualizada para mostrar o IP local
-    console.log(`Servidor rodando! Acesse em: http://${localIp}:${PORT}`);
-});
-
-app.put('/api/admin/curriculos/:id/select', auth, authorizeAdmin, async (req, res) => {
-    try {
-        const curriculum = await Curriculum.findById(req.params.id);
-
-        if (!curriculum) {
-            return res.status(404).send('Currículo não encontrado.');
-        }
-
-        // Inverte o valor booleano atual
-        curriculum.selecionadoParaEmpresa = !curriculum.selecionadoParaEmpresa;
-
-        await curriculum.save();
-        // Retorna o currículo atualizado para o frontend saber o novo estado
-        res.status(200).json(curriculum); 
-    } catch (error) {
-        console.error('Erro ao selecionar currículo:', error);
-        res.status(500).send('Erro no servidor.');
-    }
+    console.log(`Servidor rodando em http://${localIp}:${PORT}`);
 });

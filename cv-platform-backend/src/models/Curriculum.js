@@ -30,6 +30,9 @@ const CurriculumSchema = new mongoose.Schema({
     // --- NOVO CAMPO PARA A FOTO ---
     fotoUrl: { type: String, trim: true, default: '' }, // URL da foto do perfil
 
+     // --- NOVO CAMPO PARA O PDF ---
+    pdfUrl: { type: String, trim: true, default: '' }, // URL do PDF do currículo
+
     curso: { type: String, required: true, trim: true },
     periodoAtual: { type: String, required: true, trim: true },
     previsaoConclusao: { type: String, required: true, trim: true },

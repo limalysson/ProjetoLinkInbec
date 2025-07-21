@@ -1257,6 +1257,71 @@ button[type="submit"]:disabled {
   }
 }
 
+.curriculum-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.curriculum-header-row h2 {
+  flex: 1;
+  text-align: center;
+  margin: 0;
+}
+
+.curriculum-header-row .logout-button {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0;
+}
+
+.admin-cv-pdf-link {
+  margin-top: 8px;
+  text-align: right;
+}
+
+.admin-resumo-pdf-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.admin-resumo-summary {
+  margin: 0;
+  flex: 1;
+  text-align: left;
+  min-width: 0;
+}
+
+.admin-cv-pdf-link {
+  text-align: right;
+  min-width: 180px;
+}
+
+.fixed-toast-notification {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 9999;
+  background: #dfffec;
+  color: #256d25;
+  padding: 16px 32px;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  font-size: 1.1rem;
+  transition: opacity 0.3s;
+}
+
+.fixed-toast-notification.error {
+  background: #c0392b;
+}
+
 
 
 
@@ -1281,3 +1346,4 @@ button[type="submit"]:disabled {
 .logout-button:hover {
   background: #a93226;
 }
+

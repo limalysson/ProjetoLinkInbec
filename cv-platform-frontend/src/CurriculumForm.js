@@ -30,6 +30,8 @@ function CurriculumForm() {
     const [selectedFile, setSelectedFile] = useState(null); // Estado para o arquivo de foto selecionado
     const [previewUrl, setPreviewUrl] = useState(''); // Estado para a URL de pré-visualização da foto
     const [currentPhotoUrl, setCurrentPhotoUrl] = useState(''); // Para exibir a foto já salva no currículo
+    const [pdfFile, setPdfFile] = useState(null);
+    const [pdfUrl, setPdfUrl] = useState('');
 
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
@@ -38,52 +40,31 @@ function CurriculumForm() {
 
     // Efeito para carregar o currículo existente do aluno (se houver)
     useEffect(() => {
-        const fetchCurriculum = async () => {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                setError('Você precisa estar logado para ver ou editar seu currículo.');
-                return;
-            }
-
+        const fetchCurriculo = async () => {
             try {
-                const response = await api.get(`${API_BASE_URL}/api/alunos/meu-curriculo`, { // <-- Alterar esta linha
-                    headers: { Authorization: `Bearer ${token}` }
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE_URL}/api/alunos/curriculo`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
                 });
-                if (response.data) {
-                    console.log("Dados recebidos do backend:", response.data); // <-- Adicione esta linha
-                    setFormData({
-                        nomeCompleto: response.data.nomeCompleto || '',
-                        dataNascimento: response.data.dataNascimento
-                            ? response.data.dataNascimento.slice(0, 10)
-                            : '',
-                        telefone: response.data.telefone || '',
-                        linkedin: response.data.linkedin || '',
-                        github: response.data.github || '',
-                        curso: response.data.curso || '',
-                        periodoAtual: response.data.periodoAtual || '',
-                        previsaoConclusao: response.data.previsaoConclusao || '',
-                        experiencias: response.data.experiencias?.length
-                            ? response.data.experiencias
-                            : [{ empresa: '', cargo: '', inicio: '', fim: '', descricao: '' }],
-                        habilidadesTecnicas: response.data.habilidadesTecnicas || '',
-                        habilidadesComportamentais: response.data.habilidadesComportamentais || '',
-                        idiomas: response.data.idiomas?.length
-                            ? response.data.idiomas
-                            : [{ idioma: '', nivel: '' }],
-                        projetos: response.data.projetos?.length
-                            ? response.data.projetos
-                            : [{ nome: '', descricao: '', link: '' }],
-                        resumoProfissional: response.data.resumoProfissional || '',
-                    });
-                    setCurrentPhotoUrl(response.data.fotoUrl || '');
-                    setMessage('Currículo carregado com sucesso!');
+                const data = await response.json();
+                if (data.success && data.curriculo) {
+                    const curriculo = { ...data.curriculo };
+                    // Corrige o formato da data para yyyy-MM-dd
+                    if (curriculo.dataNascimento) {
+                        curriculo.dataNascimento = curriculo.dataNascimento.slice(0, 10);
+                    }
+                    setFormData(curriculo);
+                    console.log('curriculo do backend:', curriculo);
+                    setPdfUrl(curriculo.pdfUrl || '');
+                    // ...outros campos se necessário
                 }
             } catch (err) {
-                // Se o currículo não for encontrado, significa que é o primeiro cadastro
-                // Não faz nada, deixa o formulário vazio
+                setError('Erro ao carregar currículo.');
             }
         };
-        fetchCurriculum();
+        fetchCurriculo();
         // eslint-disable-next-line
     }, []);
 
@@ -142,6 +123,18 @@ function CurriculumForm() {
         }
     };
 
+    // --- Lógica para lidar com a seleção do arquivo PDF ---
+    const handlePdfChange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (file.type !== "application/pdf") {
+        setError("Por favor, selecione um arquivo PDF.");
+        setMessage('');
+        return;
+      }
+      setPdfFile(file);
+    };
+
     // --- Função para fazer o upload da foto separadamente ---
     const uploadPhoto = async (token) => {
         if (!selectedFile) {
@@ -164,6 +157,30 @@ function CurriculumForm() {
         } catch (err) {
             console.error("Erro ao fazer upload da foto:", err.response || err);
             return { success: false, message: err.response?.data?.message || 'Erro ao fazer upload da foto.' };
+        }
+    };
+
+    // --- Função para fazer o upload do PDF ---
+    const uploadPdf = async (token) => {
+        if (!pdfFile) {
+            return { success: true, message: 'Nenhum arquivo PDF selecionado para upload.' };
+        }
+
+        const pdfFormData = new FormData();
+        pdfFormData.append('pdf', pdfFile); // 'pdf' deve corresponder ao nome no backend (upload.single('pdf'))
+
+        try {
+            const response = await api.post('http://localhost:3001/api/alunos/upload-pdf', pdfFormData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data', // MUITO IMPORTANTE para uploads
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setPdfUrl(`http://localhost:3001${response.data.pdfUrl}`); // Salva a URL completa do PDF
+            return { success: true, message: 'Currículo em PDF atualizado com sucesso!' };
+        } catch (err) {
+            console.error("Erro ao fazer upload do PDF:", err.response || err);
+            return { success: false, message: err.response?.data?.message || 'Erro ao fazer upload do PDF.' };
         }
     };
 
@@ -196,7 +213,19 @@ function CurriculumForm() {
                 setMessage(photoUploadResult.message);
             }
 
-            // 2. Envia os dados do currículo (agora sem a foto no formData, pois ela já foi tratada)
+            // 2. Tenta fazer o upload do PDF (se um novo PDF foi selecionado)
+            const pdfUploadResult = await uploadPdf(token);
+            if (!pdfUploadResult.success) {
+                setError(pdfUploadResult.message);
+                setIsLoading(false);
+                return;
+            }
+            // Se houver uma mensagem do upload do PDF, exibe
+            if (pdfUploadResult.message && pdfUploadResult.message !== 'Nenhum arquivo PDF selecionado para upload.') {
+                setMessage(prevMsg => (prevMsg ? prevMsg + ' ' : '') + pdfUploadResult.message);
+            }
+
+            // 3. Envia os dados do currículo (agora sem a foto no formData, pois ela já foi tratada)
             let response;
             const existingCurriculumId = formData.id; // Supondo que o ID do currículo existente esteja em formData.id
             if (existingCurriculumId) {
@@ -206,7 +235,8 @@ function CurriculumForm() {
                     }
                 });
             } else {
-                response = await api.post(`${API_BASE_URL}/api/alunos/curriculo`, formData, { // <-- Alterar esta linha
+                const { pdfUrl, ...curriculumData } = formData;
+                response = await api.post('/api/alunos/curriculo', curriculumData, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -271,10 +301,23 @@ function CurriculumForm() {
         navigate('/aluno', { replace: true });
     };
 
+    // Efeito para limpar a mensagem após 3 segundos
+    useEffect(() => {
+      if (message) {
+        const timer = setTimeout(() => setMessage(''), 3000);
+        return () => clearTimeout(timer);
+      }
+    }, [message]);
+
     return (
-        <div className="curriculum-form-container">
-            <div className="logout-row">
-                {/* Botão de logout no topo */}
+        <>
+          {(message || error) && (
+            <div className={`fixed-toast-notification${error ? ' error' : ''}`}>
+              {message || error}
+            </div>
+          )}
+          <div className="curriculum-form-container">
+            <div className="curriculum-header-row">
                 <button
                     className="nav-button logout-button"
                     style={{ marginBottom: 16, background: '#c0392b' }}
@@ -282,11 +325,13 @@ function CurriculumForm() {
                 >
                     Sair
                 </button>
+                <h2>Meu Currículo</h2>
             </div>
-
             
-            <h2>Meu Currículo</h2>
             <form onSubmit={handleSubmit}>
+                {message && <div className="admin-popup-message">{message}</div>}
+                {error && <div className="error-message">{error}</div>}
+
                 {/* --- Seção de Upload de Foto --- */}
                 <h3>Foto de Perfil</h3>
                 <div className="form-group foto-upload-group">
@@ -340,7 +385,7 @@ function CurriculumForm() {
                         onChange={handleChange}
                         placeholder="Digite somente os numeros do seu telefone"
                         inputMode="numeric"
-                        pattern="\d*"
+                        pattern="\(\d{2}\)\s\d{5}-\d{4}"
                         />
                 </div>
                 <div className="form-group">
@@ -593,14 +638,82 @@ function CurriculumForm() {
                 
 
 
+                <div className="form-group">
+                    <label>Currículo em PDF (opcional):</label>
+                    <div style={{ display: 'flex', gap: 16, justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
+                        <button
+                            type="button"
+                            className="action-button glass-action-button"
+                            onClick={() => document.getElementById('pdfCurriculo').click()}
+                        >
+                            Selecionar PDF
+                        </button>
+                        <input
+                            type="file"
+                            id="pdfCurriculo"
+                            name="pdf"
+                            accept="application/pdf"
+                            onChange={handlePdfChange}
+                            style={{ display: 'none' }}
+                        />
+                        {pdfFile && <span style={{ marginLeft: 8 }}>{pdfFile.name}</span>}
+
+                        <button
+                            type="button"
+                            className="action-button glass-action-button"
+                            style={{
+                                background: pdfUrl ? undefined : "#ccc",
+                                color: pdfUrl ? undefined : "#666",
+                                cursor: pdfUrl ? "pointer" : "not-allowed"
+                            }}
+                            onClick={() => {
+                                if (pdfUrl) window.open(getResourceUrl(pdfUrl), '_blank');
+                            }}
+                            disabled={!pdfUrl}
+                        >
+                            {pdfUrl ? "Visualizar PDF enviado" : "Nenhum arquivo enviado"}
+                        </button>
+
+                        <button
+                            type="button"
+                            className="action-button glass-action-button"
+                            style={{ background: "#c0392b", color: "#fff" }}
+                            disabled={isLoading}
+                            onClick={async () => {
+                                if (window.confirm("Deseja remover o PDF enviado?")) {
+                                    setIsLoading(true);
+                                    setMessage('');
+                                    setError('');
+                                    const token = localStorage.getItem('token');
+                                    try {
+                                        await api.delete('http://localhost:3001/api/alunos/pdf', {
+                                            headers: { Authorization: `Bearer ${token}` }
+                                        });
+                                        setPdfUrl('');
+                                        setMessage('PDF removido com sucesso!');
+                                    } catch (err) {
+                                        setError(err.response?.data?.message || 'Erro ao remover PDF.');
+                                    } finally {
+                                        setIsLoading(false);
+                                    }
+                                }
+                            }}
+                        >
+                            Remover PDF enviado
+                        </button>
+                    </div>
+                </div>
+
+
                 <button type="submit" disabled={isLoading}>
                     {isLoading ? 'Salvando...' : 'Salvar Meu Currículo'}
                 </button>
 
-                {message && <p className="success-message" aria-live="polite">{message}</p>}
-                {error && <p className="error-message" aria-live="assertive">{error}</p>}
+                {message && <div className="admin-popup-message">{message}</div>}
+                {error && <div className="error-message">{error}</div>}
             </form>
-        </div>
+          </div>
+        </>
     );
 }
 
