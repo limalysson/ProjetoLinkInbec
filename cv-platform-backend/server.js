@@ -10,6 +10,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs'); // Importa o módulo fs para criar diretórios
 const os = require('os'); // <-- Adicionar esta linha para acessar informações do sistema
+const Job = require('./src/models/Job');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -452,6 +453,96 @@ app.delete('/api/alunos/pdf', auth, async (req, res) => {
         await curriculo.save();
 
         res.json({ success: true, message: 'PDF removido com sucesso.' });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// --- Cadastro de vaga (apenas admin) ---
+app.post('/api/admin/vagas', auth, authorizeAdmin, async (req, res) => {
+    try {
+        const vaga = new Job(req.body);
+        await vaga.save();
+        res.json({ success: true, vaga });
+    } catch (err) {
+        res.status(400).json({ success: false, message: err.message });
+    }
+});
+
+// --- Listar vagas (aluno vê só do seu curso) ---
+app.get('/api/vagas', auth, async (req, res) => {
+    try {
+        const curso = req.user.curso; // ajuste conforme onde está o curso do aluno
+        const vagas = await Job.find({ curso, status: 'ativa' });
+        res.json({ success: true, vagas });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// --- Candidatar-se a uma vaga (aluno) ---
+app.post('/api/vagas/:id/candidatar', auth, async (req, res) => {
+    try {
+        const vaga = await Job.findById(req.params.id);
+        if (!vaga) return res.status(404).json({ success: false, message: 'Vaga não encontrada.' });
+
+        // Adiciona o currículo do aluno ao array de candidatos, se ainda não estiver
+        const curriculo = await Curriculum.findOne({ alunoEmail: req.user.email });
+        if (!curriculo) return res.status(404).json({ success: false, message: 'Currículo não encontrado.' });
+
+        if (!vaga.candidatos.includes(curriculo._id)) {
+            vaga.candidatos.push(curriculo._id);
+            await vaga.save();
+        }
+
+        // Aqui você pode disparar o e-mail de confirmação se quiser
+
+        res.json({ success: true, message: 'Candidatura registrada.' });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// --- Dashboard de vagas para admin (listar todas) ---
+app.get('/api/admin/vagas', auth, authorizeAdmin, async (req, res) => {
+    try {
+        const vagas = await Job.find().populate('candidatos');
+        res.json({ success: true, vagas });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// --- Ativar/Inativar vaga ---
+app.put('/api/admin/vagas/:id/status', auth, authorizeAdmin, async (req, res) => {
+    try {
+        const vaga = await Job.findById(req.params.id);
+        if (!vaga) return res.status(404).json({ success: false, message: 'Vaga não encontrada.' });
+        vaga.status = req.body.status;
+        await vaga.save();
+        res.json({ success: true, vaga });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// --- Selecionar currículo para vaga (admin aprova candidatura) ---
+app.put('/api/admin/vagas/:vagaId/selecionar/:curriculoId', auth, authorizeAdmin, async (req, res) => {
+    try {
+        const vaga = await Job.findById(req.params.vagaId);
+        if (!vaga) return res.status(404).json({ success: false, message: 'Vaga não encontrada.' });
+
+        // Aqui você pode criar um array separado para "selecionados" se quiser, ou marcar no próprio currículo
+        // Exemplo: adicionar um campo selecionados: []
+        if (!vaga.selecionados) vaga.selecionados = [];
+        if (!vaga.selecionados.includes(req.params.curriculoId)) {
+            vaga.selecionados.push(req.params.curriculoId);
+            await vaga.save();
+        }
+
+        // Aqui você pode disparar o e-mail de aprovação
+
+        res.json({ success: true, message: 'Currículo selecionado para vaga.' });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }

@@ -319,13 +319,23 @@ function CurriculumForm() {
           <div className="curriculum-form-container">
             <div className="curriculum-header-row">
                 <button
+                    type="button"
+                    className="action-button glass-action-button"
+                    style={{ marginBottom: 16 }}
+                    onClick={() => navigate('/aluno/home')}
+                >
+                    Voltar
+                </button>
+                
+                <h2>Meu Currículo</h2>
+
+                <button
                     className="nav-button logout-button"
                     style={{ marginBottom: 16, background: '#c0392b' }}
                     onClick={handleLogout}
                 >
                     Sair
                 </button>
-                <h2>Meu Currículo</h2>
             </div>
             
             <form onSubmit={handleSubmit}>

@@ -3,6 +3,8 @@ import axios from 'axios';
 import { Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
 import './App.css'; 
 import './App.mobile.css';
+import VagasList from './VagasList';
+import AlunoHome from './AlunoHome';
 
 // --- Importação dos Componentes de Página ---
 import RequestAccess from './RequestAccess'; 
@@ -12,7 +14,8 @@ import CompanyLandingPage from './CompanyLandingPage';
 import AdminLogin from './AdminLogin';
 import AdminDashboard from './AdminDashboard';
 import Home from './Home';
-
+import JobForm from './JobForm';
+import AdminVagasDashboard from './AdminVagasDashboard';
 
 // --- COMPONENTE DE PROTEÇÃO DE ROTA (ALUNO) ---
 const ProtectedStudentRoute = ({ children, isAuthenticated, setAuthenticated, setAuthenticatedEmail }) => {
@@ -140,7 +143,40 @@ function App() {
                     </ProtectedAdminRoute>
                 } 
             />
+            <Route path="/admin/cadastrar-vaga" element={<JobForm />} />
+            <Route
+              path="/admin/vagas"
+              element={
+                <ProtectedAdminRoute isAdminAuthenticated={isAdminAuthenticated}>
+                  <AdminVagasDashboard />
+                </ProtectedAdminRoute>
+              }
+            />
             <Route path="*" element={<h2>Página Não Encontrada</h2>} />
+            <Route
+              path="/aluno/vagas"
+              element={
+                <ProtectedStudentRoute
+                  isAuthenticated={isAuthenticated}
+                  setAuthenticated={setIsAuthenticated}
+                  setAuthenticatedEmail={setAuthenticatedEmail}
+                >
+                  <VagasList />
+                </ProtectedStudentRoute>
+              }
+            />
+            <Route
+              path="/aluno/home"
+              element={
+                <ProtectedStudentRoute
+                  isAuthenticated={isAuthenticated}
+                  setAuthenticated={setIsAuthenticated}
+                  setAuthenticatedEmail={setAuthenticatedEmail}
+                >
+                  <AlunoHome />
+                </ProtectedStudentRoute>
+              }
+            />
           </Routes>
         </main>
       </div>

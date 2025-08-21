@@ -197,6 +197,19 @@ function AdminDashboard({ onAdminLogout }) {
                             <button className="copy-link-button" onClick={copyLandingPageLink}>
                                 Gerar Link para Currículos Selecionados
                             </button>
+                            <button
+                                className="action-button glass-action-button"
+                                onClick={() => navigate('/admin/cadastrar-vaga')}
+                                style={{ marginBottom: 16 }}
+                            >
+                                Cadastrar Nova Vaga
+                            </button>
+                            <button
+                                className="action-button glass-action-button"
+                                onClick={() => navigate('/admin/vagas')}
+                            >
+                                Gerenciar Vagas
+                            </button>
                             <div className="filter-status-group">
                                 <div>
                                     <label>Status:</label>

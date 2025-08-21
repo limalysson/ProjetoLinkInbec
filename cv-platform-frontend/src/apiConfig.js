@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const API_BASE_URL = 'http://192.168.1.19:3001'; // ajuste conforme seu backend
+export const API_BASE_URL = 'http://192.168.1.10:3001'; // ajuste conforme seu backend
 
 const api = axios.create({
   baseURL: API_BASE_URL,
