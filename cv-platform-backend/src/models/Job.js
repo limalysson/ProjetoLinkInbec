@@ -12,7 +12,7 @@ const JobSchema = new Schema({
     curso: { type: String, required: true }, // Curso relacionado
     salario: { type: String },
     contatoEmpresa: { type: String },
-    status: { type: String, enum: ['ativa', 'inativa'], default: 'ativa' },
+    status: { type: String, enum: ['ativo', 'inativo'], default: 'ativo' },
     dataPublicacao: { type: Date, default: Date.now },
     candidatos: [{ type: Schema.Types.ObjectId, ref: 'Curriculum' }] // Array de currículos candidatos
 });

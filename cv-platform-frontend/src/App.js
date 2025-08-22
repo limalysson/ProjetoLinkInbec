@@ -101,8 +101,8 @@ function App() {
   return (
       <div className="App">
         <header className="App-header">
-          <h1>LinkInbec</h1>
-          <p className="header-welcome-message">Bem-vindo à Plataforma de Currículos dos alunos da Faculdade INBEC.</p>        
+          <h1>Vitrine Acadêmica</h1>
+          <p className="header-welcome-message">Bem-vindo à Plataforma de Currículos de alunos.</p>        
         </header>
         <main>
           <Routes>

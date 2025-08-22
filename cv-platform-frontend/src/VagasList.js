@@ -18,7 +18,7 @@ function VagasList() {
                 const res = await api.get('/api/vagas', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                setVagas(res.data.vagas || []);
+                setVagas(res.data.vagas || res.data || []);
             } catch (err) {
                 setError('Erro ao carregar vagas.');
             } finally {
@@ -57,7 +57,9 @@ function VagasList() {
             {message && <div className="admin-popup-message">{message}</div>}
             {vagas.length === 0 && !error && <p>Nenhuma vaga disponível no momento.</p>}
             {error && <p>{error}</p>}
-            {vagas.map(vaga => (
+            {vagas
+              .filter(vaga => vaga.status === 'ativo')
+              .map(vaga => (
                 <div key={vaga._id} className="vaga-card">
                     <h3>{vaga.titulo}</h3>
                     <p><strong>Área:</strong> {vaga.area}</p>
@@ -75,7 +77,7 @@ function VagasList() {
                         Candidatar-se
                     </button>
                 </div>
-            ))}
+              ))}
         </div>
     );
 }

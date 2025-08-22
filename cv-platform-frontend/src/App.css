@@ -1077,6 +1077,19 @@ button[type="submit"]:disabled {
   background-color: var(--inbec-blue-light);
 }
 
+.admin-actions > div {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.admin-actions > div .action-button {  
+  margin: 0 ;
+  min-width: 0;
+}
+
 .action-button:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);

@@ -31,7 +31,7 @@ function CompanyLandingPage() {
         const fetchCurriculums = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get('http://192.168.1.19:3001/api/curriculos/ativos');
+                const response = await axios.get('http://localhost:3001/api/curriculos/ativos');
                 setCurriculums(response.data);
                 setError('');
             } catch (err) {

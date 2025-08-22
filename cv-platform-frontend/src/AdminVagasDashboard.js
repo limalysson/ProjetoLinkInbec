@@ -54,44 +54,69 @@ function AdminVagasDashboard() {
     if (error) return <p>{error}</p>;
 
     return (
-        <div className="admin-vagas-dashboard">
-            <h2>Dashboard de Vagas</h2>
-            {vagas.length === 0 && <p>Nenhuma vaga cadastrada.</p>}
-            {vagas.map(vaga => (
-                <div key={vaga._id} className="vaga-card">
-                    <h3>{vaga.titulo} ({vaga.status})</h3>
-                    <p><strong>Área:</strong> {vaga.area}</p>
-                    <p><strong>Curso:</strong> {vaga.curso}</p>
-                    <p><strong>Tipo:</strong> {vaga.tipo}</p>
-                    <p><strong>Localização:</strong> {vaga.localizacao}</p>
-                    <p><strong>Salário:</strong> {vaga.salario}</p>
-                    <p><strong>Contato:</strong> {vaga.contatoEmpresa}</p>
-                    <button
-                        onClick={() => handleStatusChange(vaga._id, vaga.status === 'ativa' ? 'inativa' : 'ativa')}
-                        className="action-button"
-                    >
-                        {vaga.status === 'ativa' ? 'Desativar' : 'Ativar'}
-                    </button>
-                    <h4>Candidatos:</h4>
-                    <div className="candidatos-list">
-                        {vaga.candidatos.length === 0 && <p>Nenhum candidato.</p>}
-                        {vaga.candidatos.map(curriculo => (
-                            <div key={curriculo._id} className="candidato-card">
-                                <p><strong>{curriculo.nomeCompleto}</strong> - {curriculo.curso}</p>
-                                <button
-                                    onClick={() => handleSelecionarCandidato(vaga._id, curriculo._id)}
-                                    className="action-button"
-                                >
-                                    Selecionar para vaga
-                                </button>
-                                {/* Adicione mais detalhes do currículo se quiser */}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            ))}
+  <div className="admin-dashboard-container">
+    <div className="admin-container">
+      <div className="admin-header-group">
+        <div className="admin-header-row">
+          <h2>Painel de Vagas</h2>
+          {/* Adicione botões de navegação se necessário */}
         </div>
-    );
+        <div className="admin-actions">
+          {/* Adicione filtros e ações aqui, se houver */}
+        </div>
+      </div>
+      <div className="curriculum-admin-list">
+        {vagas.length === 0 && <p>Nenhuma vaga cadastrada.</p>}
+        {vagas.map(vaga => (
+          <div key={vaga._id} className="admin-curriculum-card admin-job-card">
+            <div className="admin-card-header">
+              <div className="admin-header-info">
+                <h3>{vaga.titulo} ({vaga.status})</h3>
+                <span className={`status-badge status-${vaga.status}`}>
+                  {vaga.status.toUpperCase()}
+                </span>
+              </div>
+            </div>
+            <div className="admin-resumo-pdf-row">
+              <div className="admin-resumo-summary">
+                <p><strong>Área:</strong> {vaga.area}</p>
+                <p><strong>Curso:</strong> {vaga.curso}</p>
+                <p><strong>Tipo:</strong> {vaga.tipo}</p>
+                <p><strong>Localização:</strong> {vaga.localizacao}</p>
+                <p><strong>Salário:</strong> {vaga.salario}</p>
+                <p><strong>Contato:</strong> {vaga.contatoEmpresa}</p>
+              </div>
+              {/* Adicione ações específicas da vaga, se quiser */}
+            </div>
+            <div className="admin-card-actions admin-button-row">
+              <button
+                onClick={() => handleStatusChange(vaga._id, vaga.status === 'ativo' ? 'inativo' : 'ativo')}
+                className="action-button"
+              >
+                {vaga.status === 'ativo' ? 'Desativar' : 'Ativar'}
+              </button>
+            </div>
+            <h4>Candidatos:</h4>
+            <div className="candidatos-list">
+              {vaga.candidatos.length === 0 && <p>Nenhum candidato.</p>}
+              {vaga.candidatos.map(curriculo => (
+                <div key={curriculo._id} className="candidato-card">
+                  <p><strong>{curriculo.nomeCompleto}</strong> - {curriculo.curso}</p>
+                  <button
+                    onClick={() => handleSelecionarCandidato(vaga._id, curriculo._id)}
+                    className="action-button"
+                  >
+                    Selecionar para vaga
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+);
 }
 
 export default AdminVagasDashboard;
