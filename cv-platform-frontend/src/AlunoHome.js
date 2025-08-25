@@ -42,7 +42,7 @@ function AlunoHome() {
                     onClick={() => navigate('/aluno/vagas')}
                 >
                     Visualizar Vagas Disponíveis
-                </button>
+          </button>
         </div>
       </div>
     </div>

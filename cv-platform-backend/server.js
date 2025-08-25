@@ -11,7 +11,6 @@ const path = require('path');
 const fs = require('fs'); // Importa o módulo fs para criar diretórios
 const os = require('os'); // <-- Adicionar esta linha para acessar informações do sistema
 const Job = require('./src/models/Job');
-const Aluno = require('./src/models/Aluno'); // <-- Importar o modelo Aluno
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -203,13 +202,17 @@ app.post('/api/alunos/autenticar-acesso', async (req, res) => {
         return res.status(401).json({ message: 'Código de acesso inválido.' });
     }
 
-    // Busca o aluno para obter o curso
-    const aluno = await Aluno.findOne({ email });
-    const token = jwt.sign(
-      { email: aluno.email, role: 'aluno', curso: aluno.curso },
-      JWT_SECRET,
-      { expiresIn: '1h' }
-    );
+    // Busca o curso do aluno no currículo, se existir
+    let curso = null;
+    try {
+        const curriculum = await Curriculum.findOne({ alunoEmail: email });
+        curso = curriculum ? curriculum.curso : null;
+    } catch (err) {
+        console.error('Backend: Erro ao buscar currículo para obter curso:', err);
+    }
+
+    // Inclui o curso no token JWT
+    const token = jwt.sign({ email: email, role: 'aluno', curso }, JWT_SECRET, { expiresIn: '1h' });
 
     delete app.locals.temporaryPasswords[email];
     console.log('Backend: Autenticação bem-sucedida para o email:', email, '. Token gerado. Enviando resposta.');
@@ -479,7 +482,7 @@ app.post('/api/admin/vagas', auth, authorizeAdmin, async (req, res) => {
 // --- Listar vagas (aluno vê só do seu curso) ---
 app.get('/api/vagas', auth, async (req, res) => {
     try {
-        const curso = req.user.curso; // ajuste conforme onde está o curso do aluno
+        const curso = req.user.curso; // agora vem do token JWT do aluno
         const vagas = await Job.find({ curso, status: 'ativo' });
         res.json({ success: true, vagas });
     } catch (err) {
@@ -554,6 +557,8 @@ app.put('/api/admin/vagas/:vagaId/selecionar/:curriculoId', auth, authorizeAdmin
         res.status(500).json({ success: false, message: err.message });
     }
 });
+
+
 
 // --- Iniciando o Servidor ---
 
