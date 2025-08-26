@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import api from './apiConfig';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function VagasList() {
     const [vagas, setVagas] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
+    const [curriculoStatus, setCurriculoStatus] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -25,7 +27,21 @@ function VagasList() {
                 setLoading(false);
             }
         };
+
+        const fetchCurriculoStatus = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const res = await api.get('/api/alunos/curriculo', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setCurriculoStatus(res.data.curriculo.status);
+            } catch (err) {
+                setCurriculoStatus('');
+            }
+        };
+
         fetchVagas();
+        fetchCurriculoStatus();
     }, []);
 
     const handleCandidatar = async (vagaId) => {
@@ -44,7 +60,9 @@ function VagasList() {
     if (loading) return <p>Carregando vagas...</p>;
 
     return (
-        <div className="vagas-list">
+        <>
+        {message && <div className="admin-popup-message">{message}</div>}
+        <div className="company-landing-container">
             <h2>Vagas Disponíveis para seu Curso</h2>
             <button
                 type="button"
@@ -53,15 +71,14 @@ function VagasList() {
                 onClick={() => navigate('/aluno/home')}
             >
                 Voltar
-            </button>
-            {message && <div className="admin-popup-message">{message}</div>}
+            </button>            
             {vagas.length === 0 && !error && <p>Nenhuma vaga disponível no momento.</p>}
             {error && <p>{error}</p>}
             {vagas
               .filter(vaga => vaga.status === 'ativo')
               .map(vaga => (
-                <div key={vaga._id} className="vaga-card">
-                    <h3>{vaga.titulo}</h3>
+                <div key={vaga._id} className="vaga-card-custom">
+                    <h3 className="vaga-card-title">{vaga.titulo}</h3>
                     <p><strong>Área:</strong> {vaga.area}</p>
                     <p><strong>Descrição:</strong> {vaga.descricao}</p>
                     <p><strong>Requisitos:</strong> {vaga.requisitos}</p>
@@ -72,14 +89,22 @@ function VagasList() {
                     <p><strong>Contato:</strong> {vaga.contatoEmpresa}</p>
                     <button
                         className="action-button"
+                        disabled={curriculoStatus !== 'ativo'}
                         onClick={() => handleCandidatar(vaga._id)}
                     >
                         Candidatar-se
                     </button>
+                    {curriculoStatus !== 'ativo' && (
+                        <p style={{ color: '#ffbaba', marginTop: 8, fontWeight: 'bold' }}>
+                            Procure a administração para ativar seu currículo.
+                        </p>
+                    )}
                 </div>
               ))}
         </div>
+        </>
     );
+    
 }
 
 export default VagasList;

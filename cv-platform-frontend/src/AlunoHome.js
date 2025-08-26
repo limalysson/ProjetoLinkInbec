@@ -4,9 +4,23 @@ import { useNavigate } from 'react-router-dom';
 
 function AlunoHome() {
     const navigate = useNavigate();
+    const handleLogout = () => {
+            localStorage.removeItem('token'); // Remove o token do aluno
+            navigate('/aluno'); // Redireciona para a página de login do aluno
+        };
+
   return (
     <div className="home-login-options-container">             
-      <h2>Bem-vindo!</h2>
+      <div className="admin-header-row">
+        <h2>Painel de Vagas</h2>
+        <button
+          className="nav-button logout-button"
+          style={{ background: '#c0392b', marginLeft: '16px' }}
+          onClick={handleLogout}
+        >
+          Sair
+        </button>
+      </div>
       <div className="home-buttons-group">
         <div className="home-button-card">
           <h2 className="home-button-title">Currículo</h2>

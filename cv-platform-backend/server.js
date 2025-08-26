@@ -536,6 +536,8 @@ app.put('/api/admin/vagas/:id/status', auth, authorizeAdmin, async (req, res) =>
     }
 });
 
+
+
 // --- Selecionar currículo para vaga (admin aprova candidatura) ---
 app.put('/api/admin/vagas/:vagaId/selecionar/:curriculoId', auth, authorizeAdmin, async (req, res) => {
     try {
@@ -558,7 +560,29 @@ app.put('/api/admin/vagas/:vagaId/selecionar/:curriculoId', auth, authorizeAdmin
     }
 });
 
+app.get('/api/admin/vagas/:id', auth, async (req, res) => {
+    try {
+        const vaga = await Job.findById(req.params.id);
+        if (!vaga) {
+            return res.status(404).json({ success: false, message: 'Vaga não encontrada.' });
+        }
+        res.json({ success: true, vaga });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
 
+app.put('/api/admin/vagas/:id', auth, async (req, res) => {
+    try {
+        const vaga = await Job.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!vaga) {
+            return res.status(404).json({ success: false, message: 'Vaga não encontrada.' });
+        }
+        res.json({ success: true, vaga });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
 
 // --- Iniciando o Servidor ---
 

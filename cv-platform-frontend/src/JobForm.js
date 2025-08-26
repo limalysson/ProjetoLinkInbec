@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import api from './apiConfig'; // ajuste o caminho se necessário
 
-function JobForm({ onSuccess }) {
+function JobForm({ onSuccess, modoEdicao }) {
+    const { id } = useParams();
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         titulo: '',
         area: '',
@@ -18,6 +21,17 @@ function JobForm({ onSuccess }) {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
+    useEffect(() => {
+        if (modoEdicao && id) {
+            const token = localStorage.getItem('adminToken');
+            api.get(`/api/admin/vagas/${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            }).then(res => {
+                setFormData(res.data.vaga);
+            }).catch(() => setError('Erro ao carregar vaga.'));
+        }
+    }, [modoEdicao, id]);
+
     const handleChange = e => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
@@ -28,26 +42,22 @@ function JobForm({ onSuccess }) {
         setMessage('');
         setError('');
         try {
-            const token = localStorage.getItem('token');
-            await api.post('/api/admin/vagas', formData, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            setMessage('Vaga cadastrada com sucesso!');
-            setFormData({
-                titulo: '',
-                area: '',
-                descricao: '',
-                requisitos: '',
-                beneficios: '',
-                tipo: '',
-                localizacao: '',
-                curso: '',
-                salario: '',
-                contatoEmpresa: ''
-            });
+            const token = localStorage.getItem('adminToken');
+            if (modoEdicao && id) {
+                await api.put(`/api/admin/vagas/${id}`, formData, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setMessage('Vaga editada com sucesso!');
+            } else {
+                await api.post('/api/admin/vagas', formData, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setMessage('Vaga cadastrada com sucesso!');
+            }
             if (onSuccess) onSuccess();
+            navigate('/admin/vagas');
         } catch (err) {
-            setError(err.response?.data?.message || 'Erro ao cadastrar vaga.');
+            setError(err.response?.data?.message || 'Erro ao salvar vaga.');
         } finally {
             setIsLoading(false);
         }
@@ -55,7 +65,7 @@ function JobForm({ onSuccess }) {
 
     return (
         <div className="job-form-container">
-            <h2>Cadastrar Nova Vaga</h2>
+            <h2>{modoEdicao ? 'Editar Vaga' : 'Cadastrar Nova Vaga'}</h2>
             {message && <div className="admin-popup-message">{message}</div>}
             {error && <div className="error-message">{error}</div>}
             <form onSubmit={handleSubmit}>
@@ -112,7 +122,7 @@ function JobForm({ onSuccess }) {
                     <input type="text" name="contatoEmpresa" value={formData.contatoEmpresa} onChange={handleChange} />
                 </div>
                 <button type="submit" disabled={isLoading}>
-                    {isLoading ? 'Cadastrando...' : 'Cadastrar Vaga'}
+                    {isLoading ? 'Cadastrando...' : (modoEdicao ? 'Salvar Alterações' : 'Cadastrar Vaga')}
                 </button>
             </form>
         </div>

@@ -143,7 +143,11 @@ function App() {
                     </ProtectedAdminRoute>
                 } 
             />
+
             <Route path="/admin/cadastrar-vaga" element={<JobForm />} />
+
+            <Route path="/admin/editar-vaga/:id" element={<JobForm modoEdicao={true} />} />
+
             <Route
               path="/admin/vagas"
               element={
@@ -153,6 +157,7 @@ function App() {
               }
             />
             <Route path="*" element={<h2>Página Não Encontrada</h2>} />
+
             <Route
               path="/aluno/vagas"
               element={
