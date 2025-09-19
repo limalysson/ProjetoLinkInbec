@@ -45,37 +45,39 @@ function AdminLogin({ onAdminLogin }) {
     };
 
     return (
-        <div className="auth-container">
-            <h2>Login de Administrador</h2>
-            <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label htmlFor="adminEmail">E-mail:</label>
-                    <input
-                        type="email"
-                        id="adminEmail"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="admin@inbec.edu.br"
-                        required
-                    />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="adminPassword">Senha:</label>
-                    <input
-                        type="password"
-                        id="adminPassword"
-                        value={senha}
-                        onChange={(e) => setSenha(e.target.value)}
-                        placeholder="admin123"
-                        required
-                    />
-                </div>
-                <button type="submit" disabled={loading}>
-                    {loading ? 'Entrando...' : 'Entrar como Administrador'}
-                </button>
-            </form>
-            {error && <p className="error-message">{error}</p>}
-        </div>
+        <main>
+            <div className="auth-container">
+                <h1>Login de Administrador</h1>
+                <form onSubmit={handleSubmit}>
+                    <div className="form-group">
+                        <label htmlFor="adminEmail">E-mail:</label>
+                        <input
+                            type="email"
+                            id="adminEmail"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="admin@inbec.edu.br"
+                            required
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="adminPassword">Senha:</label>
+                        <input
+                            type="password"
+                            id="adminPassword"
+                            value={senha}
+                            onChange={(e) => setSenha(e.target.value)}
+                            placeholder="admin123"
+                            required
+                        />
+                    </div>
+                    <button type="submit" disabled={loading}>
+                        {loading ? 'Entrando...' : 'Entrar como Administrador'}
+                    </button>
+                </form>
+                {error && <p className="error-message">{error}</p>}
+            </div>
+        </main>
     );
 }
 

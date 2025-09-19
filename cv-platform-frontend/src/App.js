@@ -99,92 +99,90 @@ function App() {
   };
 
   return (
-      <div className="App">
-        <header className="App-header">
-          <h1>Vitrine Acadêmica</h1>
-          <p className="header-welcome-message">Bem-vindo à Plataforma de Currículos de alunos.</p>        
-        </header>
-        <main>
-          <Routes>
-            
-            <Route path="/" element={<Home />} />
-            
-            <Route path="/aluno" element={<RequestAccess setAuthenticatedEmail={setAuthenticatedEmail} />} />
+    <div className="App">
+      <header className="App-header">
+        <h1>Vitrine Acadêmica</h1>
+        <p className="header-welcome-message">Bem-vindo à Plataforma de Currículos de alunos.</p>        
+      </header>
+      <Routes>
+        
+        <Route path="/" element={<Home />} />
+        
+        <Route path="/aluno" element={<RequestAccess setAuthenticatedEmail={setAuthenticatedEmail} />} />
 
-            <Route path="/aluno/autenticar" element={
-              <AuthenticateAccess
-                email={authenticatedEmail} 
-                setAuthenticated={setIsAuthenticated}
-                setAuthenticatedEmail={setAuthenticatedEmail}
-              />
-            } />
+        <Route path="/aluno/autenticar" element={
+          <AuthenticateAccess
+            email={authenticatedEmail} 
+            setAuthenticated={setIsAuthenticated}
+            setAuthenticatedEmail={setAuthenticatedEmail}
+          />
+        } />
 
-            <Route path="/aluno/curriculo" element={
-              <ProtectedStudentRoute 
-                isAuthenticated={isAuthenticated} 
-                setAuthenticated={setIsAuthenticated}
-                setAuthenticatedEmail={setAuthenticatedEmail}
-              >
-                <CurriculumForm />
-              </ProtectedStudentRoute>
-            } />
+        <Route path="/aluno/curriculo" element={
+          <ProtectedStudentRoute 
+            isAuthenticated={isAuthenticated} 
+            setAuthenticated={setIsAuthenticated}
+            setAuthenticatedEmail={setAuthenticatedEmail}
+          >
+            <CurriculumForm />
+          </ProtectedStudentRoute>
+        } />
 
-            <Route path="/empresa" element={<CompanyLandingPage />} />
+        <Route path="/empresa" element={<CompanyLandingPage />} />
 
-            {/* Rota de Login do Admin */}
-            <Route path="/admin" element={<AdminLogin onAdminLogin={handleAdminLogin} />} />
+        {/* Rota de Login do Admin */}
+        <Route path="/admin" element={<AdminLogin onAdminLogin={handleAdminLogin} />} />
 
-            {/* Rota Protegida do Dashboard */}
-            <Route 
-                path="/admin/dashboard"
-                element={
-                    <ProtectedAdminRoute isAdminAuthenticated={isAdminAuthenticated}>
-                        <AdminDashboard onAdminLogout={handleAdminLogout} />
-                    </ProtectedAdminRoute>
-                } 
-            />
-
-            <Route path="/admin/cadastrar-vaga" element={<JobForm />} />
-
-            <Route path="/admin/editar-vaga/:id" element={<JobForm modoEdicao={true} />} />
-
-            <Route
-              path="/admin/vagas"
-              element={
+        {/* Rota Protegida do Dashboard */}
+        <Route 
+            path="/admin/dashboard"
+            element={
                 <ProtectedAdminRoute isAdminAuthenticated={isAdminAuthenticated}>
-                  <AdminVagasDashboard />
+                    <AdminDashboard onAdminLogout={handleAdminLogout} />
                 </ProtectedAdminRoute>
-              }
-            />
-            <Route path="*" element={<h2>Página Não Encontrada</h2>} />
+            } 
+        />
 
-            <Route
-              path="/aluno/vagas"
-              element={
-                <ProtectedStudentRoute
-                  isAuthenticated={isAuthenticated}
-                  setAuthenticated={setIsAuthenticated}
-                  setAuthenticatedEmail={setAuthenticatedEmail}
-                >
-                  <VagasList />
-                </ProtectedStudentRoute>
-              }
-            />
-            <Route
-              path="/aluno/home"
-              element={
-                <ProtectedStudentRoute
-                  isAuthenticated={isAuthenticated}
-                  setAuthenticated={setIsAuthenticated}
-                  setAuthenticatedEmail={setAuthenticatedEmail}
-                >
-                  <AlunoHome />
-                </ProtectedStudentRoute>
-              }
-            />
-          </Routes>
-        </main>
-      </div>
+        <Route path="/admin/cadastrar-vaga" element={<JobForm />} />
+
+        <Route path="/admin/editar-vaga/:id" element={<JobForm modoEdicao={true} />} />
+
+        <Route
+          path="/admin/vagas"
+          element={
+            <ProtectedAdminRoute isAdminAuthenticated={isAdminAuthenticated}>
+              <AdminVagasDashboard />
+            </ProtectedAdminRoute>
+          }
+        />
+        <Route path="*" element={<h2>Página Não Encontrada</h2>} />
+
+        <Route
+          path="/aluno/vagas"
+          element={
+            <ProtectedStudentRoute
+              isAuthenticated={isAuthenticated}
+              setAuthenticated={setIsAuthenticated}
+              setAuthenticatedEmail={setAuthenticatedEmail}
+            >
+              <VagasList />
+            </ProtectedStudentRoute>
+          }
+        />
+        <Route
+          path="/aluno/home"
+          element={
+            <ProtectedStudentRoute
+              isAuthenticated={isAuthenticated}
+              setAuthenticated={setIsAuthenticated}
+              setAuthenticatedEmail={setAuthenticatedEmail}
+            >
+              <AlunoHome />
+            </ProtectedStudentRoute>
+          }
+        />
+      </Routes>
+    </div>
   );
 }
 

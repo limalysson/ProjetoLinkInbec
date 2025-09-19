@@ -316,34 +316,33 @@ function CurriculumForm() {
               {message || error}
             </div>
           )}
-          <div className="curriculum-form-container">
-            <div className="curriculum-header-row">
-                <button
-                    type="button"
-                    className="action-button glass-action-button"
-                    style={{ marginBottom: 16 }}
-                    onClick={() => navigate('/aluno/home')}
-                >
-                    Voltar
-                </button>
-                
-                <h2>Meu Currículo</h2>
+          <main>
+      <div className="curriculum-form-container">
+        <div className="curriculum-header-row">
+          <button
+            type="button"
+            className="action-button glass-action-button"
+            style={{ marginBottom: 16 }}
+            onClick={() => navigate('/aluno/home')}
+          >
+            Voltar
+          </button>
+          <h1>Meu Currículo</h1>
+          <button
+            className="nav-button logout-button"
+            style={{ marginBottom: 16, background: '#c0392b' }}
+            onClick={handleLogout}
+          >
+            Sair
+          </button>
+        </div>
+        <form onSubmit={handleSubmit}>
+          {message && <div className="admin-popup-message">{message}</div>}
+          {error && <div className="error-message">{error}</div>}
 
-                <button
-                    className="nav-button logout-button"
-                    style={{ marginBottom: 16, background: '#c0392b' }}
-                    onClick={handleLogout}
-                >
-                    Sair
-                </button>
-            </div>
-            
-            <form onSubmit={handleSubmit}>
-                {message && <div className="admin-popup-message">{message}</div>}
-                {error && <div className="error-message">{error}</div>}
-
-                {/* --- Seção de Upload de Foto --- */}
-                <h3>Foto de Perfil</h3>
+          {/* --- Seção de Upload de Foto --- */}
+          <section>
+            <h3>Foto de Perfil</h3>
                 <div className="form-group foto-upload-group">
                     <label htmlFor="fotoPerfil" className="upload-button-label">Selecionar Foto</label>
                     <input
@@ -373,10 +372,11 @@ function CurriculumForm() {
                     )}
                     {selectedFile && <p className="file-name">Arquivo selecionado: {selectedFile.name}</p>}
                 </div>
+          </section>
 
-
-                {/* --- Dados Pessoais --- */}
-                <h3>Dados Pessoais</h3>
+          {/* --- Dados Pessoais --- */}
+          <section>
+            <h3>Dados Pessoais</h3>
                 <div className="form-group">
                     <label htmlFor="nomeCompleto">Nome Completo:</label>
                     <input type="text" id="nomeCompleto" name="nomeCompleto" value={formData.nomeCompleto} onChange={handleChange} required />
@@ -418,10 +418,12 @@ function CurriculumForm() {
                     {isLoading ? 'Salvando...' : 'Salvar Dados Pessoais'}
                     </button>
                 </div>
+          </section>
                 
 
-                {/* --- Dados Acadêmicos --- */}
-                <h3>Dados Acadêmicos</h3>
+          {/* --- Dados Acadêmicos --- */}
+          <section>
+            <h3>Dados Acadêmicos</h3>
                 <div className="form-group">
                     <div className="form-group">
                         <label htmlFor="curso">Curso:</label>
@@ -475,9 +477,11 @@ function CurriculumForm() {
                         {isLoading ? 'Salvando...' : 'Salvar Dados Acadêmicos'}
                     </button>
                 </div>                
+          </section>
 
-                {/* --- Experiências Profissionais --- */}
-                <h3>Experiências Profissionais</h3>
+          {/* --- Experiências Profissionais --- */}
+          <section>
+            <h3>Experiências Profissionais</h3>
                 {formData.experiencias.map((exp, index) => (
                     <div key={index} className="array-item-group">
                         <div className="form-group">
@@ -523,9 +527,11 @@ function CurriculumForm() {
                     {isLoading ? 'Salvando...' : 'Salvar Experiências'}
                 </button>                
                 </div>             
+          </section>
 
-                {/* --- Habilidades --- */}
-                <h3>Habilidades</h3>
+          {/* --- Habilidades --- */}
+          <section>
+            <h3>Habilidades</h3>
                 <div className="form-group">
                     <label htmlFor="habilidadesTecnicas">Habilidades Técnicas (separadas por vírgula):</label>
                     <input type="text" id="habilidadesTecnicas" name="habilidadesTecnicas" value={formData.habilidadesTecnicas} onChange={handleChange} placeholder="Ex: JavaScript, React, Node.js, SQL" />
@@ -545,11 +551,11 @@ function CurriculumForm() {
                     {isLoading ? 'Salvando...' : 'Salvar Habilidades'}
                 </button>
                 </div>
+          </section>
 
-                
-
-                {/* --- Idiomas --- */}
-                <h3>Idiomas</h3>
+          {/* --- Idiomas --- */}
+          <section>
+            <h3>Idiomas</h3>
                 {formData.idiomas.map((idioma, index) => (
                     <div key={index} className="array-item-group">
                         <div className="form-group">
@@ -584,9 +590,11 @@ function CurriculumForm() {
                 </button>
                 
                 </div>                
+          </section>
 
-                {/* --- Projetos --- */}
-                <h3>Projetos</h3>
+          {/* --- Projetos --- */}
+          <section>
+            <h3>Projetos</h3>
                 {formData.projetos.map((projeto, index) => (
                     <div key={index} className="array-item-group">
                         <div className="form-group">
@@ -625,11 +633,11 @@ function CurriculumForm() {
                 </button>
                 
                 </div>
-                
+          </section>
 
-
-                {/* --- Resumo Profissional --- */}
-                <h3>Resumo Profissional</h3>
+          {/* --- Resumo Profissional --- */}
+          <section>
+            <h3>Resumo Profissional</h3>
                 <div className="form-group">
                     <label htmlFor="resumoProfissional">Breve Resumo (aparecerá no card para empresas):</label>
                     <textarea id="resumoProfissional" name="resumoProfissional" value={formData.resumoProfissional} onChange={handleChange} rows="4" maxLength="300" placeholder="Apresente-se em poucas linhas, destacando suas principais qualidades e objetivos profissionais."></textarea>
@@ -645,10 +653,11 @@ function CurriculumForm() {
                 </div>               
                 
                 </div>
-                
+          </section>
 
-
-                <div className="form-group">
+          {/* --- PDF --- */}
+          <section>
+            <div className="form-group">
                     <label>Currículo em PDF (opcional):</label>
                     <div style={{ display: 'flex', gap: 16, justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
                         <button
@@ -713,16 +722,16 @@ function CurriculumForm() {
                         </button>
                     </div>
                 </div>
+          </section>
 
-
-                <button type="submit" disabled={isLoading}>
-                    {isLoading ? 'Salvando...' : 'Salvar Meu Currículo'}
-                </button>
-
-                {message && <div className="admin-popup-message">{message}</div>}
-                {error && <div className="error-message">{error}</div>}
-            </form>
-          </div>
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? 'Salvando...' : 'Salvar Meu Currículo'}
+          </button>
+          {message && <div className="admin-popup-message">{message}</div>}
+          {error && <div className="error-message">{error}</div>}
+        </form>
+      </div>
+    </main>
         </>
     );
 }

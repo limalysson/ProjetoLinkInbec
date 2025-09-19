@@ -60,51 +60,67 @@ function VagasList() {
     if (loading) return <p>Carregando vagas...</p>;
 
     return (
-        <>
-        {message && <div className="admin-popup-message">{message}</div>}
-        <div className="company-landing-container">
-            <h2>Vagas Disponíveis para seu Curso</h2>
-            <button
-                type="button"
-                className="action-button glass-action-button"
-                style={{ marginBottom: 16 }}
-                onClick={() => navigate('/aluno/home')}
-            >
-                Voltar
-            </button>            
-            {vagas.length === 0 && !error && <p>Nenhuma vaga disponível no momento.</p>}
-            {error && <p>{error}</p>}
-            {vagas
-              .filter(vaga => vaga.status === 'ativo')
-              .map(vaga => (
-                <div key={vaga._id} className="vaga-card-custom">
-                    <h3 className="vaga-card-title">{vaga.titulo}</h3>
-                    <p><strong>Área:</strong> {vaga.area}</p>
-                    <p><strong>Descrição:</strong> {vaga.descricao}</p>
-                    <p><strong>Requisitos:</strong> {vaga.requisitos}</p>
-                    <p><strong>Benefícios:</strong> {vaga.beneficios}</p>
-                    <p><strong>Tipo:</strong> {vaga.tipo}</p>
-                    <p><strong>Localização:</strong> {vaga.localizacao}</p>
-                    <p><strong>Salário:</strong> {vaga.salario}</p>
-                    <p><strong>Contato:</strong> {vaga.contatoEmpresa}</p>
-                    <button
-                        className="action-button"
-                        disabled={curriculoStatus !== 'ativo'}
-                        onClick={() => handleCandidatar(vaga._id)}
-                    >
-                        Candidatar-se
-                    </button>
-                    {curriculoStatus !== 'ativo' && (
-                        <p style={{ color: '#ffbaba', marginTop: 8, fontWeight: 'bold' }}>
-                            Procure a administração para ativar seu currículo.
-                        </p>
-                    )}
-                </div>
-              ))}
-        </div>
-        </>
+        <main>
+            {message && <div className="admin-popup-message">{message}</div>}
+            <section className="company-landing-container">
+                <header>
+                    <h1>Vagas Disponíveis para seu Curso</h1>
+                    <nav>
+                        <button
+                            type="button"
+                            className="action-button glass-action-button"
+                            style={{ marginBottom: 16 }}
+                            onClick={() => navigate('/aluno/home')}
+                        >
+                            Voltar
+                        </button>
+                    </nav>
+                </header>
+                {vagas.length === 0 && !error && <p>Nenhuma vaga disponível no momento.</p>}
+                {error && <p>{error}</p>}
+                <section>
+                    {vagas
+                        .filter(vaga => vaga.status === 'ativo')
+                        .map(vaga => (
+                            <article key={vaga._id} className="vaga-card-custom">
+                                <header>
+                                    <h2 className="vaga-card-title">{vaga.titulo}</h2>
+                                </header>
+                                <section>
+                                    <p><strong>Área:</strong> {vaga.area}</p>
+                                    <p><strong>Descrição:</strong> {vaga.descricao}</p>
+                                    <p><strong>Requisitos:</strong> {vaga.requisitos}</p>
+                                    <p><strong>Tipo:</strong> {vaga.tipo}</p>
+                                    <p><strong>Localização:</strong> {vaga.localizacao}</p>
+                                    <p><strong>Salário:</strong> {vaga.salario}</p>
+                                    <p><strong>Contato:</strong> {vaga.contatoEmpresa}</p>
+                                    <p><strong>Benefícios:</strong></p>
+                                    <ul>
+                                        {vaga.beneficios
+                                            .split(',')
+                                            .map(ben => <li key={ben.trim()}>{ben.trim()}</li>)}
+                                    </ul>
+                                </section>
+                                <footer>
+                                    <button
+                                        className="action-button"
+                                        disabled={curriculoStatus !== 'ativo'}
+                                        onClick={() => handleCandidatar(vaga._id)}
+                                    >
+                                        Candidatar-se
+                                    </button>
+                                    {curriculoStatus !== 'ativo' && (
+                                        <p style={{ color: '#ffbaba', marginTop: 8, fontWeight: 'bold' }}>
+                                            Procure a administração para ativar seu currículo.
+                                        </p>
+                                    )}
+                                </footer>
+                            </article>
+                        ))}
+                </section>
+            </section>
+        </main>
     );
-    
 }
 
 export default VagasList;

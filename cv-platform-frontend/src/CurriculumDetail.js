@@ -2,17 +2,16 @@ import React from 'react';
 
 function CurriculumDetail({ curriculum, onClose }) {
     if (!curriculum) {
-        return null; // Não renderiza nada se não houver currículo
+        return null;
     }
 
-    // Função auxiliar para formatar datas (se estiverem vindo como string de data)
     const formatDate = (dateString) => {
         if (!dateString) return 'N/A';
         try {
             const date = new Date(dateString);
             return date.toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' });
         } catch (e) {
-            return dateString; // Retorna original se não conseguir formatar
+            return dateString;
         }
     };
 
@@ -20,7 +19,7 @@ function CurriculumDetail({ curriculum, onClose }) {
         <div className="curriculum-detail-overlay">
             <div className="curriculum-detail-modal">
                 <button className="close-button" onClick={onClose}>X</button>
-                <h2>Detalhes do Currículo</h2>
+                <h1>Detalhes do Currículo</h1>
                 
                 {/* --- Dados Pessoais --- */}
                 <section>
@@ -50,13 +49,15 @@ function CurriculumDetail({ curriculum, onClose }) {
                 <section>
                     <h3>Experiências Profissionais</h3>
                     {curriculum.experiencias && curriculum.experiencias.length > 0 ? (
-                        curriculum.experiencias.map((exp, index) => (
-                            <div key={index} className="experience-item">
-                                <h4>{exp.cargo} em {exp.empresa}</h4>
-                                <p>{exp.inicio} - {exp.fim || 'Atual'}</p>
-                                <p>{exp.descricao}</p>
-                            </div>
-                        ))
+                        <ul>
+                            {curriculum.experiencias.map((exp, index) => (
+                                <li key={index} className="experience-item">
+                                    <h4>{exp.cargo} em {exp.empresa}</h4>
+                                    <p>{exp.inicio} - {exp.fim || 'Atual'}</p>
+                                    <p>{exp.descricao}</p>
+                                </li>
+                            ))}
+                        </ul>
                     ) : (
                         <p>Nenhuma experiência profissional informada.</p>
                     )}
@@ -73,9 +74,11 @@ function CurriculumDetail({ curriculum, onClose }) {
                 <section>
                     <h3>Idiomas</h3>
                     {curriculum.idiomas && curriculum.idiomas.length > 0 ? (
-                        curriculum.idiomas.map((lang, index) => (
-                            <p key={index}><strong>{lang.idioma}:</strong> {lang.nivel}</p>
-                        ))
+                        <ul>
+                            {curriculum.idiomas.map((lang, index) => (
+                                <li key={index}><strong>{lang.idioma}:</strong> {lang.nivel}</li>
+                            ))}
+                        </ul>
                     ) : (
                         <p>Nenhum idioma informado.</p>
                     )}
@@ -85,18 +88,19 @@ function CurriculumDetail({ curriculum, onClose }) {
                 <section>
                     <h3>Projetos</h3>
                     {curriculum.projetos && curriculum.projetos.length > 0 ? (
-                        curriculum.projetos.map((proj, index) => (
-                            <div key={index} className="project-item">
-                                <h4>{proj.nome}</h4>
-                                <p>{proj.descricao}</p>
-                                {proj.link && <p><a href={proj.link} target="_blank" rel="noopener noreferrer">{proj.link}</a></p>}
-                            </div>
-                        ))
+                        <ul>
+                            {curriculum.projetos.map((proj, index) => (
+                                <li key={index} className="project-item">
+                                    <h4>{proj.nome}</h4>
+                                    <p>{proj.descricao}</p>
+                                    {proj.link && <p><a href={proj.link} target="_blank" rel="noopener noreferrer">{proj.link}</a></p>}
+                                </li>
+                            ))}
+                        </ul>
                     ) : (
                         <p>Nenhum projeto informado.</p>
                     )}
                 </section>
-                
             </div>
         </div>
     );

@@ -172,35 +172,31 @@ function AdminDashboard({ onAdminLogout }) {
     }
 
     return (
-        <>
+        <main>
             {message && (
                 <div className="admin-popup-message">{message}</div>
             )}
-            <div className="admin-dashboard-container">                      
-                
+            <div className="admin-dashboard-container">
                 <div className="admin-container">
-                    <div className="admin-header-group">
-                        
-                    <div className="admin-header-row">
-                        <h2>Painel Administrativo</h2>
-                        {/* Botão de logout no topo */}
-                        <button
-                            className="nav-button logout-button"
-                            style={{ background: '#c0392b' }}
-                            onClick={handleLogout}
-                        >
-                            Sair
-                        </button>
-                    </div>
-                        <div className="admin-actions">
-                            {/* Filtros e ações não mudam */}
+                    <header className="admin-header-group">
+                        <div className="admin-header-row">
+                            <h1>Painel Administrativo</h1>
+                            <button
+                                className="nav-button logout-button"
+                                style={{ background: '#c0392b' }}
+                                onClick={handleLogout}
+                            >
+                                Sair
+                            </button>
+                        </div>
+                        <nav className="admin-actions">
                             <button className="copy-link-button" onClick={copyLandingPageLink}>
                                 Gerar Link para Currículos Selecionados
                             </button>
                             <div>
                                 <button
                                     className="action-button glass-action-button"
-                                    onClick={() => navigate('/admin/cadastrar-vaga')}                                    
+                                    onClick={() => navigate('/admin/cadastrar-vaga')}
                                 >
                                     Cadastrar Nova Vaga
                                 </button>
@@ -213,8 +209,8 @@ function AdminDashboard({ onAdminLogout }) {
                             </div>
                             <div className="filter-status-group">
                                 <div>
-                                    <label>Status:</label>
-                                    <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
+                                    <label htmlFor="status-select">Status:</label>
+                                    <select id="status-select" value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
                                         <option value="all">Todos</option>
                                         <option value="ativo">Ativo</option>
                                         <option value="pendente">Pendente</option>
@@ -222,8 +218,8 @@ function AdminDashboard({ onAdminLogout }) {
                                     </select>
                                 </div>
                                 <div>
-                                    <label>Período:</label>
-                                    <select value={filterPeriodo} onChange={e => setFilterPeriodo(e.target.value)}>
+                                    <label htmlFor="periodo-select">Período:</label>
+                                    <select id="periodo-select" value={filterPeriodo} onChange={e => setFilterPeriodo(e.target.value)}>
                                         <option value="all">Todos</option>
                                         <option value="1º Semestre">1º Semestre</option>
                                         <option value="2º Semestre">2º Semestre</option>
@@ -238,8 +234,8 @@ function AdminDashboard({ onAdminLogout }) {
                                     </select>
                                 </div>
                                 <div>
-                                    <label>Curso:</label>
-                                    <select value={filterCurso} onChange={e => setFilterCurso(e.target.value)}>
+                                    <label htmlFor="curso-select">Curso:</label>
+                                    <select id="curso-select" value={filterCurso} onChange={e => setFilterCurso(e.target.value)}>
                                         <option value="all">Todos</option>
                                         <option value="Análise e Desenvolvimento de Sistemas">Análise e Desenvolvimento de Sistemas</option>
                                         <option value="Engenharia de Software">Engenharia de Software</option>
@@ -248,9 +244,8 @@ function AdminDashboard({ onAdminLogout }) {
                                     </select>
                                 </div>
                             </div>
-                        </div>
-                        {/* Botões Selecionar Todos e Limpar Seleção */}
-                        <div className="section-save-btn-row" style={{ marginBottom: 12 }}>
+                        </nav>
+                        <section className="section-save-btn-row" style={{ marginBottom: 12 }}>
                             <button
                                 type="button"
                                 className="action-button glass-action-button approve-button"
@@ -277,10 +272,9 @@ function AdminDashboard({ onAdminLogout }) {
                             >
                                 Limpar Seleção
                             </button>
-                        </div>
+                        </section>
 
-                        {/* Botões de ação em massa */}
-                        <div className="section-save-btn-row" style={{ marginBottom: 24 }}>
+                        <section className="section-save-btn-row" style={{ marginBottom: 24 }}>
                             <button
                                 type="button"
                                 className="action-button approve-button"
@@ -305,8 +299,8 @@ function AdminDashboard({ onAdminLogout }) {
                                     setMessage('Todos os currículos filtrados foram marcados como pendente!');
                                 }}
                             >
-                                    <span className="btn-text-desktop">Marcar todos como Pendente</span>
-                                    <span className="btn-text-mobile">Marcar Pendentes</span>
+                                <span className="btn-text-desktop">Marcar todos como Pendente</span>
+                                <span className="btn-text-mobile">Marcar Pendentes</span>
                             </button>
                             <button
                                 type="button"
@@ -321,27 +315,27 @@ function AdminDashboard({ onAdminLogout }) {
                             >
                                 Desativar Todos
                             </button>
-                        </div>
-                    </div>
+                        </section>
+                    </header>
 
                     {curriculums.length === 0 && <p>Nenhum currículo encontrado para os filtros selecionados.</p>}
 
-                    <div className="curriculum-admin-list">
+                    <section className="curriculum-admin-list">
                         {curriculums.map(curriculum => (
-                            <div 
-                                key={curriculum._id} 
+                            <article
+                                key={curriculum._id}
                                 className={`admin-curriculum-card${expandedCardId === curriculum._id ? ' expanded' : ''}`}
                             >
-                                <div className="admin-card-header">
+                                <header className="admin-card-header">
                                     <div className="admin-header-info">
-                                        <h3>{curriculum.nomeCompleto} - {curriculum.curso} ({curriculum.periodoAtual})</h3>                                
+                                        <h2>{curriculum.nomeCompleto} - {curriculum.curso} ({curriculum.periodoAtual})</h2>
                                         <span className={`status-badge status-${curriculum.status}`}>
                                             {curriculum.status.toUpperCase()}
                                         </span>
-                                    </div>                            
-                                </div> 
+                                    </div>
+                                </header>
 
-                                <div className="admin-email-select-row">
+                                <section className="admin-email-select-row">
                                     <div className="admin-email-row">
                                         <p className="admin-resumo-summary">
                                             <strong>Habilidades:</strong> {curriculum.habilidadesTecnicas || 'Sem habilidades.'}
@@ -350,10 +344,9 @@ function AdminDashboard({ onAdminLogout }) {
                                     <div className="admin-select-row">
                                         {curriculum.selecionadoParaEmpresa && (
                                             <p className="selection-indicator"></p>
-                                        )}                           
+                                        )}
                                         <button
                                             onClick={async () => {
-                                                // Só mostra o alert se for SELECIONAR (não remover) e status !== 'ativo'
                                                 if (!curriculum.selecionadoParaEmpresa && curriculum.status !== 'ativo') {
                                                     const statusLabel = curriculum.status === 'pendente' ? 'pendente' : 'inativo';
                                                     if (window.confirm(`Esse curriculo está '${statusLabel}'. Deseja ativar/aprovar e selecionar?`)) {
@@ -362,47 +355,42 @@ function AdminDashboard({ onAdminLogout }) {
                                                     }
                                                     return;
                                                 }
-                                                // Se já está selecionado, apenas remove sem alert
                                                 handleSelectForCompany(curriculum._id);
                                             }}
                                             className={`action-button ${curriculum.selecionadoParaEmpresa ? 'select-button' : 'deselect-button'}`}
+                                            aria-pressed={!!curriculum.selecionadoParaEmpresa}
                                         >
                                             {curriculum.selecionadoParaEmpresa ? '✔' : 'X'}
                                         </button>
                                     </div>
-                                </div>
+                                </section>
 
-                                <div className="admin-resumo-pdf-row">
+                                <section className="admin-resumo-pdf-row">
                                     <p className="admin-resumo-summary">{curriculum.resumoProfissional || 'Sem resumo.'}</p>
                                     <div className="admin-cv-pdf-link">
                                         {curriculum.pdfUrl ? (
-                                        <a
-                                            href={`${API_BASE_URL}${curriculum.pdfUrl}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="action-button glass-action-button"
-                                            style={{ marginTop: 8, display: 'inline-block' }}
-                                        >
-                                            Visualizar Currículo PDF
-                                        </a>
+                                            <a
+                                                href={`${API_BASE_URL}${curriculum.pdfUrl}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="action-button glass-action-button"
+                                                style={{ marginTop: 8, display: 'inline-block' }}
+                                            >
+                                                Visualizar Currículo PDF
+                                            </a>
                                         ) : (
-                                        <button
-                                            className="action-button glass-action-button"
-                                            style={{ marginTop: 8, display: 'inline-block', opacity: 0.6, cursor: 'not-allowed' }}
-                                            disabled
-                                        >
-                                            PDF não enviado
-                                        </button>
+                                            <button
+                                                className="action-button glass-action-button"
+                                                style={{ marginTop: 8, display: 'inline-block', opacity: 0.6, cursor: 'not-allowed' }}
+                                                disabled
+                                            >
+                                                PDF não enviado
+                                            </button>
                                         )}
                                     </div>
-                                    </div>
-                                
-                                <div className="admin-card-actions">
-                                    {/* ======================================= */}
-                                    {/* INÍCIO DA ALTERAÇÃO            */}
-                                    {/* ======================================= */}
+                                </section>
 
-                                    {/* Linha 1: Botões de Status */}
+                                <footer className="admin-card-actions">
                                     <div className="admin-button-row">
                                         <button
                                             onClick={() => handleStatusChange(curriculum._id, 'ativo')}
@@ -428,6 +416,8 @@ function AdminDashboard({ onAdminLogout }) {
                                         <button
                                             onClick={() => setExpandedCardId(expandedCardId === curriculum._id ? null : curriculum._id)}
                                             className="action-button glass-action-button"
+                                            aria-expanded={expandedCardId === curriculum._id}
+                                            aria-controls={`curriculo-detalhe-${curriculum._id}`}
                                         >
                                             <span>Ver </span>
                                             <span>Detalhes</span>
@@ -438,23 +428,22 @@ function AdminDashboard({ onAdminLogout }) {
                                             </span>
                                         </button>
                                     </div>
-                                    
-                                </div>
+                                </footer>
 
-                                {/* Conteúdo expandido não muda */}
-                                <div className="expanded-info admin-expanded-info">
+                                <section
+                                    id={`curriculo-detalhe-${curriculum._id}`}
+                                    className="expanded-info admin-expanded-info"
+                                >
                                     {expandedCardId === curriculum._id && (
                                         <CurriculumFullDetailsInline curriculum={curriculum} />
                                     )}
-                                </div>
-
-                                
-                            </div>
+                                </section>
+                            </article>
                         ))}
-                    </div>
+                    </section>
                 </div>
             </div>
-        </>
+        </main>
     );
 }
 

@@ -52,27 +52,29 @@ function AuthenticateAccess({ email, setAuthenticated, setAuthenticatedEmail }) 
   }
 
   return (
-    <div className="auth-container">
-      <h2>Verificar Código de Acesso</h2>
-      <p>Um código foi gerado para: <strong>{currentEmail}</strong></p>
-      <p>Verifique o console do servidor backend para o código de teste.</p>
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="tempPassword">Código de Acesso:</label>
-          <input
-            type="text"
-            id="tempPassword"
-            value={tempPassword}
-            onChange={(e) => setTempPassword(e.target.value)}
-            placeholder="Digite o código"
-            required
-          />
-        </div>
-        <button type="submit">Entrar</button>
-      </form>
-      {message && <p className="success-message">{message}</p>}
-      {error && <p className="error-message">{error}</p>}
-    </div>
+    <main>
+      <div className="auth-container">
+        <h1>Verificar Código de Acesso</h1>
+        <p>Um código foi gerado para: <strong>{currentEmail}</strong></p>
+        <p>Verifique o console do servidor backend para o código de teste.</p>
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="tempPassword">Código de Acesso:</label>
+            <input
+              type="text"
+              id="tempPassword"
+              value={tempPassword}
+              onChange={(e) => setTempPassword(e.target.value)}
+              placeholder="Digite o código"
+              required
+            />
+          </div>
+          <button type="submit">Entrar</button>
+        </form>
+        {message && <p className="success-message">{message}</p>}
+        {error && <p className="error-message">{error}</p>}
+      </div>
+    </main>
   );
 }
 
